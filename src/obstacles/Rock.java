@@ -12,10 +12,6 @@ public class Rock extends Obstacle{
     }
 
     public boolean verifyCoords(int x, int y){
-        if(x+1 > (super.getWorld().getSize() - 1) || y+1 > (super.getWorld().getSize() - 1)){
-            return false;
-        }
-
         if(super.getWorld().getGrid().get(y).get(x).getType() != CellType.GRASS ||
                 super.getWorld().getGrid().get(y+1).get(x).getType() != CellType.GRASS ||
                 super.getWorld().getGrid().get(y).get(x+1).getType() != CellType.GRASS ||
@@ -30,8 +26,8 @@ public class Rock extends Obstacle{
         boolean check = false;
         Coord newCoords = null;
         do{
-            int randomX = (int)(Math.random() * (super.getWorld().getSize() - 1));
-            int randomY = (int)(Math.random() * (super.getWorld().getSize() - 1));
+            int randomX = (int)(Math.random() * (super.getWorld().getSize() - 2));
+            int randomY = (int)(Math.random() * (super.getWorld().getSize() - 2));
 
             check = verifyCoords(randomX, randomY);
 
