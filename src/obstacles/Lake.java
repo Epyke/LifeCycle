@@ -1,11 +1,14 @@
 package obstacles;
 
-import world.Cell;
-import world.CellType;
-import world.Coord;
-import world.World;
+import utils.Adjacent;
+import utils.Rand;
+import world.*;
+
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class Lake extends Obstacle{
+
     private int size;
     public Lake(World world, int size){
         super(world);
@@ -23,8 +26,8 @@ public class Lake extends Obstacle{
         boolean check = false;
         Coord newCoords = null;
         do{
-            int randomX = (int)(Math.random() * (super.getWorld().getSize() - 1));
-            int randomY = (int)(Math.random() * (super.getWorld().getSize() - 1));
+            int randomX = Rand.getRandomNmb(super.getWorld().getSize() - 1);
+            int randomY = Rand.getRandomNmb(super.getWorld().getSize() - 1);
 
             check = verifyCoords(randomX, randomY);
 
@@ -36,11 +39,32 @@ public class Lake extends Obstacle{
     }
 
     public void genObstacle() {
+        int currSize = 0;
+        ArrayList<Cell> frontier = new ArrayList<>();
         Coord StartPos = getRandomCoords();
+        Cell center = super.getWorld().getGrid().get(StartPos.getY()).get(StartPos.getX());
+        center.setCellType(CellType.WATER);
+        super.getMap().put(StartPos, center);
+        currSize++;
 
-        for (int i = 0; i < size; i++){
-            Cell selectedCell = super.getWorld().getGrid().get(StartPos.getY()).get(StartPos.getX());
-            selectedCell.setCellType(CellType.WATER);
+        frontier = Adjacent.getAdjacents(super.getWorld(),center, CellType.GRASS);
+
+        for(Cell c: frontier){
+            if (c.getType() != CellType.GRASS){
+                frontier.remove(c);
+            }
+        }
+
+        while (currSize <= size && !frontier.isEmpty()){
+            int randomIndex = (int)(Math.random() * frontier.size());
+            Cell next = frontier.get(randomIndex);
+
+            frontier.remove(randomIndex);
+
+            next.setCellType(CellType.WATER);
+            super.getMap().put(next.getCoord(), next);
+            frontier.addAll(Adjacent.getAdjacents(super.getWorld(), next, CellType.GRASS));
+            currSize++;
         }
     }
 }

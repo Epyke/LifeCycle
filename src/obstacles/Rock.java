@@ -1,22 +1,30 @@
 package obstacles;
 
+import utils.Rand;
 import world.CellType;
 import world.Coord;
 import world.Cell;
 import world.World;
 
 public class Rock extends Obstacle{
-
+    private static final int[][] disp = {{0,1},{1,0},{1,1}};
     public Rock(World world){
         super(world);
     }
 
     public boolean verifyCoords(int x, int y){
-        if(super.getWorld().getGrid().get(y).get(x).getType() != CellType.GRASS ||
-                super.getWorld().getGrid().get(y+1).get(x).getType() != CellType.GRASS ||
-                super.getWorld().getGrid().get(y).get(x+1).getType() != CellType.GRASS ||
-                super.getWorld().getGrid().get(y+1).get(x+1).getType() != CellType.GRASS){
+        if (super.getWorld().getGrid().get(y).get(x).getType() != CellType.GRASS){
             return false;
+        }
+
+        for(int[] c: disp){
+            int nx = x + c[0];
+            int ny = y + c[1];
+
+            if (nx > super.getWorld().getSize()-1 || ny > super.getWorld().getSize() - 1 ||
+            super.getWorld().getGrid().get(ny).get(nx).getType() != CellType.GRASS){
+                return false;
+            }
         }
 
         return true;
@@ -26,8 +34,8 @@ public class Rock extends Obstacle{
         boolean check = false;
         Coord newCoords = null;
         do{
-            int randomX = (int)(Math.random() * (super.getWorld().getSize() - 2));
-            int randomY = (int)(Math.random() * (super.getWorld().getSize() - 2));
+            int randomX = Rand.getRandomNmb(super.getWorld().getSize() - 1);
+            int randomY = Rand.getRandomNmb(super.getWorld().getSize() - 1);
 
             check = verifyCoords(randomX, randomY);
 
@@ -42,18 +50,15 @@ public class Rock extends Obstacle{
         Coord newCoords = getRandomCoords();
         Cell selectedCell = super.getWorld().getGrid().get(newCoords.getY()).get(newCoords.getX());
         selectedCell.setCellType(CellType.ROCK);
-        super.getMap().put(selectedCell.getCoord(), selectedCell);
+        super.getMap().put(newCoords, selectedCell);
 
-        selectedCell = super.getWorld().getGrid().get(newCoords.getY()+1).get(newCoords.getX());
-        selectedCell.setCellType(CellType.ROCK);
-        super.getMap().put(selectedCell.getCoord(), selectedCell);
+        for(int[] c: disp){
+            int nx = newCoords.getX() + c[0];
+            int ny = newCoords.getY() + c[1];
 
-        selectedCell = super.getWorld().getGrid().get(newCoords.getY()).get(newCoords.getX()+1);
-        selectedCell.setCellType(CellType.ROCK);
-        super.getMap().put(selectedCell.getCoord(), selectedCell);
-
-        selectedCell = super.getWorld().getGrid().get(newCoords.getY()+1).get(newCoords.getX()+1);
-        selectedCell.setCellType(CellType.ROCK);
-        super.getMap().put(selectedCell.getCoord(), selectedCell);
+            Cell selectedCell2 = super.getWorld().getGrid().get(ny).get(nx);
+            selectedCell2.setCellType(CellType.ROCK);
+            super.getMap().put(selectedCell2.getCoord(), selectedCell2);
+        }
     }
 }

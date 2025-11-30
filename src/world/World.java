@@ -1,7 +1,8 @@
 package world;
 
+import obstacles.Lake;
 import obstacles.Rock;
-
+import utils.Rand;
 import java.util.ArrayList;
 
 public class World {
@@ -15,8 +16,16 @@ public class World {
         }
     }
 
+    public void genRandomLakes(int limit, int sizeMin, int sizeMax){
+        int rdmNumb = Rand.getRandomNmb(1,limit);
+        for(int i = 0; i < rdmNumb; i++){
+            int rdmSize = Rand.getRandomNmb(sizeMin, sizeMax);
+            new Lake(this, rdmSize).genObstacle();
+        }
+    }
+
     public void genRandomRocks(int limit){
-        int rdmNumb = (int)(Math.random() * limit);
+        int rdmNumb = Rand.getRandomNmb(1,limit);
         for(int i = 0;i < rdmNumb; i++){
             new Rock(this).genObstacle();
         }
@@ -36,6 +45,7 @@ public class World {
         }
 
         genRandomRocks(5);
+        genRandomLakes(3, 10, 15);
     }
 
     public String worldView(){
