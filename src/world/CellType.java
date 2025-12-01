@@ -1,5 +1,8 @@
 package world;
 
+/**
+ * A class CellType representa o tipo de cada célula presente no mundo, cada tipo está associado à um caracter.
+ */
 public enum CellType {
     GRASS('.'),
     ROCK('#'),

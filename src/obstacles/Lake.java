@@ -7,6 +7,9 @@ import world.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * A class Lake representa os lagos presentes no mundo, cada lago é generado aleatoriamente seja em posição e formato.
+ */
 public class Lake extends Obstacle{
 
     private int size;
@@ -15,6 +18,12 @@ public class Lake extends Obstacle{
         this.size = size;
     }
 
+    /**
+     * Verifica através das coordenadas fornecidas se a célula é do tipo GRASS
+     * @param x
+     * @param y
+     * @return retorna um valor booleano
+     */
     public boolean verifyCoords(int x, int y){
         if(super.getWorld().getGrid().get(y).get(x).getType() != CellType.GRASS){
             return false;
@@ -22,6 +31,10 @@ public class Lake extends Obstacle{
         return true;
     }
 
+    /**
+     * Escolhe aleatoriamente uma coordenada válida e que tenha uma célula do tipo GRASS
+     * @return as coordenadas aleatorios de uma célula do tipo grass
+     */
     public Coord getRandomCoords(){
         boolean check = false;
         Coord newCoords = null;
@@ -38,6 +51,9 @@ public class Lake extends Obstacle{
         return newCoords;
     }
 
+    /**
+     * Algoritmo que vai gerar um lago com um formato aleatorio, escolhe de forma aleatoria uma célula vizinha que seja válida e do tipo GRASS até que o determinado tamanho seja atinjido.
+     */
     public void genObstacle() {
         int currSize = 0;
         ArrayList<Cell> frontier = new ArrayList<>();

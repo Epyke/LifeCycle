@@ -6,6 +6,9 @@ import world.Coord;
 import world.World;
 import java.util.HashMap;
 
+/**
+ * A class abstrata Obstacle representa um obstaculo para as entidades, ou seja estas não podem se deslocar para este
+ */
 public abstract class Obstacle {
     private HashMap<Coord, Cell> map;
     private World world;
@@ -21,6 +24,7 @@ public abstract class Obstacle {
     public HashMap<Coord, Cell> getMap(){
         return map;
     }
+
 
     public abstract boolean verifyCoords(int x, int y);
     public abstract Coord getRandomCoords();

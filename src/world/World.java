@@ -5,6 +5,9 @@ import obstacles.Rock;
 import utils.Rand;
 import java.util.ArrayList;
 
+/**
+ *A class world reprenseta o mundo em que vai ocorrer a simulação
+ */
 public class World {
     private ArrayList<ArrayList<Cell>> grid;
     private final int size;
@@ -16,6 +19,13 @@ public class World {
         }
     }
 
+    /**
+     *Generação de lagos no mundo, para os animais poderem beber.
+     * @param limit A quantidade maxima de lagos que vão aparecer no mapa, aparece por padrão pelo menos um;
+     * @param sizeMin O tamanho minimo de cada lago
+     * @param sizeMax O tamanho máxim de cada lago
+     * O tamanho é gerado aleatoriamente, porém dentro dos tamanhos minimos e máximos fornecidos.
+     */
     public void genRandomLakes(int limit, int sizeMin, int sizeMax){
         int rdmNumb = Rand.getRandomNmb(1,limit);
         for(int i = 0; i < rdmNumb; i++){
@@ -24,6 +34,10 @@ public class World {
         }
     }
 
+    /**
+     * Generação de rochas no mundo, estas são por enquanto apenas obstaculos.
+     * @param limit O numero máximo de Rochas no mundo, por padrão aparecem pelo menos uma.
+     */
     public void genRandomRocks(int limit){
         int rdmNumb = Rand.getRandomNmb(1,limit);
         for(int i = 0;i < rdmNumb; i++){
@@ -31,6 +45,9 @@ public class World {
         }
     }
 
+    /**
+     * Generação do mundo, incluido obstaculos do mapa.
+     */
     public void worldGen(){
         for(int i = 0; i < size; i++){
             grid.add(new ArrayList<Cell>());
@@ -48,6 +65,10 @@ public class World {
         genRandomLakes(3, 10, 15);
     }
 
+    /**
+     * Visualização do mundo na linha de comandos
+     * @return String A sequencia de caracteres que representa o mundo.
+     */
     public String worldView(){
         String res = "";
         for(ArrayList<Cell> rows: grid){
