@@ -1,19 +1,34 @@
 package world;
 
+import entities.Animals;
+import entities.Entity;
+import entities.Plants;
 import obstacles.Lake;
 import obstacles.Rock;
 import utils.Rand;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- *A class world reprenseta o mundo em que vai ocorrer a simulação
+ *A class world representa o mundo em que vai ocorrer a simulação
  */
 public class World {
     private ArrayList<ArrayList<Cell>> grid;
     private final int size;
+
+    /**
+     * Dois HashMaps separados para animais e plantas, porque como os animais se movem, isto implica estar sempre a procurar no msm Hashmap
+     * e por isso ao separmos em dois, isto alevia a carga de procura do hashmap animais, já que não existe plantas.
+     */
+    private HashMap<Coord, Animals> animals;
+    private HashMap<Coord, Plants> plants;
+
+
     public World(int size){
         grid = new ArrayList<>();
         this.size = size;
+        animals = new HashMap<>();
+        plants = new HashMap<>();
         if (!(size > 0)){
             throw new IllegalArgumentException("Size needs to be > 0");
         }
