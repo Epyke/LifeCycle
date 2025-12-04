@@ -6,10 +6,15 @@ package world;
 public class Cell {
     private Coord coords;
     private CellType type;
+    private LayerType currentOcupant;
 
     public Cell(Coord coords, CellType type){
         this.coords = coords;
         this.type = type;
+    }
+
+    public LayerType getCurrentOcupant() {
+        return currentOcupant;
     }
 
     public Coord getCoord(){

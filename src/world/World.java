@@ -1,8 +1,7 @@
 package world;
 
-import entities.Animals;
-import entities.Entity;
-import entities.Plants;
+import entities.Animal;
+import entities.Plant;
 import obstacles.Lake;
 import obstacles.Rock;
 import utils.Rand;
@@ -20,8 +19,8 @@ public class World {
      * Dois HashMaps separados para animais e plantas, porque como os animais se movem, isto implica estar sempre a procurar no msm Hashmap
      * e por isso ao separmos em dois, isto alevia a carga de procura do hashmap animais, já que não existe plantas.
      */
-    private HashMap<Coord, Animals> animals;
-    private HashMap<Coord, Plants> plants;
+    private HashMap<Coord, Animal> animals;
+    private HashMap<Coord, Plant> plants;
 
 
     public World(int size){

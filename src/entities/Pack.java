@@ -1,4 +1,5 @@
 package entities;
 
-public interface Pack {
+public class Pack {
+
 }
