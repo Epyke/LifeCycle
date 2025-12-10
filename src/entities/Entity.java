@@ -13,6 +13,8 @@ public abstract class Entity {
         this.coords = coords;
     }
 
+    public abstract boolean reproduction();
+
     public World getWorld() {
         return world;
     }

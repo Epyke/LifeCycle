@@ -1,5 +1,7 @@
 package world;
 
+import structures.HabitatType;
+
 /**
  * A class Cell representa cada cellula do mundo, cada uma tem uma coordenada e um tipo de célula.
  */
@@ -7,6 +9,7 @@ public class Cell {
     private Coord coords;
     private CellType type;
     private LayerType currentOcupant;
+    private HabitatType habitat;
 
     public Cell(Coord coords, CellType type){
         this.coords = coords;

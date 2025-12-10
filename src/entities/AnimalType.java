@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public enum AnimalType implements Edible {
-    //Syntax: NAME(MaxHealth, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    WOLF(150, 65, 1, 0.07, 5, true, 15, 30, HabitatType.DEN, null),
-    RABBIT(100, 50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.CARROT));
+    //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
+    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, null, 'W'),
+    RABBIT(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.CARROT), 'R');
 
     private static final HashMap<AnimalType, Set<AnimalType>> huntMap = new HashMap<>();
 
@@ -31,7 +31,11 @@ public enum AnimalType implements Edible {
     }
 
     //Basic values variables
-    private int health;
+    private int Maxhealth;
+    private int MaxEnergy;
+    private int MaxHunger;
+    private int MaxThirst;
+    private int MaxAge;
     private int EnergyReproduction;
     private int EnergyMovement;
 
@@ -50,8 +54,14 @@ public enum AnimalType implements Edible {
     private HabitatType habitat;
     private Set<PlantType> plantDiet;
 
-    private AnimalType(int hp, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, Set<PlantType> plantDiet){
-        this.health = hp;
+    private char symb;
+
+    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, Set<PlantType> plantDiet, char symb){
+        this.Maxhealth = hp;
+        this.MaxEnergy = energy;
+        this.MaxHunger = food;
+        this.MaxThirst = water;
+        this.MaxAge = maxAge;
         this.EnergyReproduction = energyReproduction;
         this.EnergyMovement = energyMovement;
         this.spendRate = spendRate;
@@ -61,6 +71,7 @@ public enum AnimalType implements Edible {
         this.CaloriesValue = CaloriesValue;
         this.habitat = habitat;
         this.plantDiet = plantDiet;
+        this.symb = symb;
     }
 
     public Set<AnimalType> getPredators() {
@@ -72,13 +83,27 @@ public enum AnimalType implements Edible {
         return CaloriesValue;
     }
 
+    public int getMaxHealth() { return Maxhealth; }
+    public int getMaxEnergy() {return MaxEnergy;}
+    public int getMaxHunger() {return MaxHunger; }
+    public int getMaxThirst() {return MaxThirst; }
+    public int getMaxAge(){return getMaxAge();}
+    public int getVision() { return vision; }
+    public double getSpendRate() { return spendRate; }
+    public int getReproEnergy(){return EnergyReproduction;}
+    public char getSymb() { return symb; }
+    public void setSymb(char newSymb) {symb = newSymb;}
+
+
     public boolean canEat(Edible food){
         if(food instanceof PlantType) {
+            if (this.plantDiet == null) return false;
             return plantDiet.contains((PlantType)food);
         }
 
         if (food instanceof AnimalType) {
-            return preyMap.getOrDefault(this, null).contains(food);
+            Set<AnimalType> myPrey = huntMap.get(this);
+            return myPrey != null && myPrey.contains(food);
         }
         return false;
     }
