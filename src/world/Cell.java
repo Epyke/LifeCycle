@@ -24,11 +24,19 @@ public class Cell {
         return coords;
     }
 
+    public HabitatType getHabitat() {
+        return habitat;
+    }
+
     public CellType getType(){
         return type;
     }
 
     public void setCellType(CellType type){
         this.type = type;
+    }
+
+    public void setCurrentOcupant(LayerType type){
+        currentOcupant = type;
     }
 }

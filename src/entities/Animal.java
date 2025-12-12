@@ -1,7 +1,11 @@
 package entities;
 
-import world.Coord;
-import world.World;
+import structures.HabitatType;
+import utils.Adjacent;
+import utils.Rand;
+import world.*;
+
+import java.util.ArrayList;
 
 public class Animal extends Entity {
     private final AnimalType type;
@@ -9,8 +13,6 @@ public class Animal extends Entity {
     private int currentEnergy;
     private int currentFood;
     private int currentWater;
-    private int currentAge = 0;
-    private boolean isDead = false;
 
     public Animal(World w, Coord coord, AnimalType type){
         super(w,coord);
@@ -21,22 +23,40 @@ public class Animal extends Entity {
         this.currentWater = type.getMaxThirst();
     }
 
-    public void update() {
-        if (isDead) return;
+    public boolean move(){
+        Cell actualCell = super.getWorld().getGrid().get(super.getCoords().getY()).get(super.getCoords().getX());
+        ArrayList<Cell> adjs = Adjacent.getAdjacents(super.getWorld(), actualCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
+        if(adjs.isEmpty()){
+            return false;
+        }
+        int randIndex = Rand.getRandomNmb(adjs.size());
+        super.getWorld().getGrid().get(adjs.get(randIndex).getCoord().getY()).get(adjs.get(randIndex).getCoord().getX()).setCurrentOcupant(LayerType.ANIMAL);
+        actualCell.setCurrentOcupant(LayerType.NONE);
+        return true;
+    }
 
-        currentAge++;
+    public void updateStats() {
+        if (super.getIsDead()) return;
 
         currentEnergy -= (int)(type.getSpendRate() * type.getMaxEnergy());
         currentFood -= (int)((type.getSpendRate()*1.5) * type.getMaxHunger());
         currentWater -= (int)((type.getSpendRate()*2) * type.getMaxThirst());
 
-        if (currentEnergy <= 0 || currentHealth <= 0 || currentAge >= type.getMaxAge()) {
+        if(currentEnergy <= 0 || currentHealth <= 0){
             die();
         }
     }
 
-    private void die() {
-        this.isDead = true;
+    public void updateAge(){
+        if (super.getIsDead()) return;
+        super.incrementAge();
+        if (super.getAge() >= type.getMaxAge()) {
+            die();
+        }
+    }
+
+    public void die() {
+        super.setDied();
         type.setSymb('X');
         System.out.println(type + " died at " + "[" + super.getCoords().getX() + "," + super.getCoords().getY() + "]");
     }

@@ -1,5 +1,6 @@
 package obstacles;
 
+import structures.HabitatType;
 import utils.Adjacent;
 import utils.Rand;
 import world.*;
@@ -63,7 +64,7 @@ public class Lake extends Obstacle{
         super.getMap().put(StartPos, center);
         currSize++;
 
-        frontier = Adjacent.getAdjacents(super.getWorld(),center, CellType.GRASS);
+        frontier = Adjacent.getAdjacents(super.getWorld(),center, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
 
         for(Cell c: frontier){
             if (c.getType() != CellType.GRASS){
@@ -79,7 +80,7 @@ public class Lake extends Obstacle{
 
             next.setCellType(CellType.WATER);
             super.getMap().put(next.getCoord(), next);
-            frontier.addAll(Adjacent.getAdjacents(super.getWorld(), next, CellType.GRASS));
+            frontier.addAll(Adjacent.getAdjacents(super.getWorld(), next, CellType.GRASS, LayerType.NONE, HabitatType.NONE));
             currSize++;
         }
     }

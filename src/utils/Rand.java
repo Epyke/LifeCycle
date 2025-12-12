@@ -11,7 +11,7 @@ public class Rand {
     private Rand(){};
 
     /**
-     * Metodo para gerar um numero aleatorio de 0 atá um dado numero.
+     * Metodo para gerar um numero aleatorio de 0 até um dado numero.
      */
     public static int getRandomNmb(int max){
         if(max < 0){

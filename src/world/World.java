@@ -5,6 +5,8 @@ import entities.Plant;
 import obstacles.Lake;
 import obstacles.Rock;
 import utils.Rand;
+
+import java.nio.charset.CoderResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,7 +23,6 @@ public class World {
      */
     private HashMap<Coord, Animal> animals;
     private HashMap<Coord, Plant> plants;
-
 
     public World(int size){
         grid = new ArrayList<>();
@@ -77,6 +78,36 @@ public class World {
 
         genRandomRocks(5);
         genRandomLakes(3, 10, 15);
+    }
+
+    /**
+     * Criação do mapa das células vazias do mundo, usado na geração de entidades no mundo
+     * @return HashMap Um HashMap como chave coordenadas de células vazias e como valores as células vazias
+     */
+    public HashMap<Coord, Cell> getEmptyCells(){
+        HashMap<Coord, Cell> res = new HashMap<>();
+        for(ArrayList<Cell> rows: grid){
+            for(Cell c: rows){
+                if(c.getType() == CellType.GRASS){
+                    res.put(c.getCoord(), c);
+                }
+            }
+        }
+        return res;
+    }
+
+    public void genEntities(double plantsRate, double animalsRate, double emptyRate){
+        if(plantsRate < 0 || plantsRate > 100 || animalsRate < 0 || animalsRate > 100 || emptyRate < 0 || emptyRate > 100){
+            throw new IllegalArgumentException("O valor de cada argumento têm de estar entre 0 e 100");
+        }
+
+        if(plantsRate + animalsRate + emptyRate != 100){
+            throw new IllegalArgumentException("A soma das percentagens de inicialização têm que ser igual a 100");
+        }
+
+        HashMap<Coord, Cell> emptyCellsMap = new HashMap<>();
+        int availableCells = emptyCellsMap.size();
+
     }
 
     /**
