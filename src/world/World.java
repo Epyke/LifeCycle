@@ -1,6 +1,7 @@
 package world;
 
 import entities.Animal;
+import entities.Entity;
 import entities.Plant;
 import obstacles.Lake;
 import obstacles.Rock;
@@ -18,17 +19,14 @@ public class World {
     private final int size;
 
     /**
-     * Dois HashMaps separados para animais e plantas, porque como os animais se movem, isto implica estar sempre a procurar no msm Hashmap
-     * e por isso ao separmos em dois, isto alevia a carga de procura do hashmap animais, já que não existe plantas.
+     * Um unico HashMap para simplificar a atualização dos organismos
      */
-    private HashMap<Coord, Animal> animals;
-    private HashMap<Coord, Plant> plants;
+    private HashMap<Coord, Entity> entities;
 
     public World(int size){
         grid = new ArrayList<>();
         this.size = size;
-        animals = new HashMap<>();
-        plants = new HashMap<>();
+        entities = new HashMap<>();
         if (!(size > 0)){
             throw new IllegalArgumentException("Size needs to be > 0");
         }
@@ -108,6 +106,18 @@ public class World {
         HashMap<Coord, Cell> emptyCellsMap = new HashMap<>();
         int availableCells = emptyCellsMap.size();
 
+
+    }
+
+    public void updateEntities(){
+        for(Entity e : entities.values()){
+            e.updateAge();
+            if(e instanceof Animal){
+                ((Animal) e).move();
+            }
+            e.updateStats();
+            e.reproduction();
+        }
     }
 
     /**
