@@ -99,17 +99,46 @@ public class World {
     }
 
     /**
+     * Condição que verifica se a célula está vazia para nascer um organismo
+     * @param c Coordenadas da célula
+     * @return boolean se criou
+     */
+    private boolean canSpawnAt(Cell c) {
+        return c.getCurrentOcupant() == LayerType.NONE
+                && c.getHabitat() == HabitatType.NONE
+                && c.getType() == CellType.GRASS;
+    }
+
+    /**
      * Nascimento de animal após reprodução
      * @param c Coordenadas do recém nascido
      * @param type Tipo de animal
-     * @return boolean se foi criado com sucesso
+     * @return boolean true se foi criado com sucesso
      */
-    public boolean bornEntity(Coord c, AnimalType type){
+    public boolean bornEntity(Coord c, AnimalType type) {
         Cell currCell = CellUtils.findCell(this, c);
-        if (currCell.getCurrentOcupant() == LayerType.NONE && currCell.getHabitat() == HabitatType.NONE && currCell.getType() == CellType.GRASS){
+
+        if (canSpawnAt(currCell)) {
             Animal baby = new Animal(this, c, type);
             entities.put(c, baby);
             currCell.setCurrentOcupant(LayerType.ANIMAL);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Nascimento de planta após reprodução
+     * @param c Coordenadas do nova planta
+     * @param type Tipo de planta
+     * @return boolean true se foi criada com sucesso
+     */
+    public boolean bornEntity(Coord c, PlantType type) {
+        Cell currCell = CellUtils.findCell(this, c);
+        if (canSpawnAt(currCell)) {
+            Plant sapling = new Plant(this, c, type);
+            entities.put(c, sapling);
+            currCell.setCurrentOcupant(LayerType.PLANT);
             return true;
         }
         return false;

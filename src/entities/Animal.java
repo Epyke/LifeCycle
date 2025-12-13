@@ -15,6 +15,7 @@ public class Animal extends Entity implements Edible{
     private int currentFood;
     private int currentWater;
     private Gender gender;
+    private int trueMaxAge;
 
     public Animal(World w, Coord coord, AnimalType type){
         super(w,coord);
@@ -24,6 +25,7 @@ public class Animal extends Entity implements Edible{
         this.currentFood = type.getMaxHunger();
         this.currentWater = type.getMaxThirst();
         gender = Rand.getRandomEnum(Gender.class);
+        trueMaxAge = Rand.getRandomNmb((int)(type.getMaxAge()*0.8), type.getMaxAge());
     }
 
     private Edible getEdibleType(Entity e) {
@@ -117,7 +119,7 @@ public class Animal extends Entity implements Edible{
         }
 
         super.incrementAge();
-        if (super.getAge() >= type.getMaxAge()) {
+        if (super.getAge() >= trueMaxAge) {
             die();
         }
     }
