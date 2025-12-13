@@ -9,6 +9,7 @@ public class Time {
     public void startTime(){
         int yearsLimit = 50;
         for(int i = 0; i < yearsLimit; i++){
+            System.out.println("Years: " + i + "\n");
             w.updateEntities();
             System.out.println(w.worldView());
         }

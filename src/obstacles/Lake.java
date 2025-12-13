@@ -66,17 +66,15 @@ public class Lake extends Obstacle{
 
         frontier = Adjacent.getAdjacents(super.getWorld(),center, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
 
-        for(Cell c: frontier){
-            if (c.getType() != CellType.GRASS){
-                frontier.remove(c);
-            }
-        }
-
-        while (currSize <= size && !frontier.isEmpty()){
-            int randomIndex = (int)(Math.random() * frontier.size());
+        while (currSize < size && !frontier.isEmpty()){
+            int randomIndex = Rand.getRandomNmb(frontier.size() - 1);
             Cell next = frontier.get(randomIndex);
 
             frontier.remove(randomIndex);
+
+            if(next.getType() == CellType.WATER){
+                continue;
+            }
 
             next.setCellType(CellType.WATER);
             super.getMap().put(next.getCoord(), next);

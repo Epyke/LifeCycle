@@ -21,6 +21,7 @@ public class Plant extends Entity {
 
     public void updateAge(){
         if(super.getIsDead()){
+            super.incrementDecompose();
             return;
         }
         super.incrementAge();
@@ -44,5 +45,9 @@ public class Plant extends Entity {
             return true;
         }
         return false;
+    }
+
+    public PlantType getType(){
+        return type;
     }
 }

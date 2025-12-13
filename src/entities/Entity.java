@@ -8,12 +8,14 @@ public abstract class Entity {
     private Coord coords;
     private int currentAge;
     private boolean isDead;
+    private int decomposeTimer;
 
     public Entity(World world, Coord coords){
         this.world = world;
         this.coords = coords;
         currentAge = 0;
         isDead = false;
+        decomposeTimer = 0;
     }
 
     public World getWorld() {
@@ -42,6 +44,14 @@ public abstract class Entity {
 
     public void setDied(){
         isDead = true;
+    }
+
+    public int getDecomposeTimer(){
+        return decomposeTimer;
+    }
+
+    public void incrementDecompose(){
+        decomposeTimer++;
     }
 
     public abstract void updateStats();

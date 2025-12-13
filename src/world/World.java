@@ -1,15 +1,17 @@
 package world;
 
-import entities.Animal;
-import entities.Entity;
-import entities.Plant;
+import entities.*;
 import obstacles.Lake;
 import obstacles.Rock;
+import utils.CellUtils;
 import utils.Rand;
 
 import java.nio.charset.CoderResult;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  *A class world representa o mundo em que vai ocorrer a simulação
@@ -76,24 +78,53 @@ public class World {
 
         genRandomRocks(5);
         genRandomLakes(3, 10, 15);
+        genEntities(20, 30, 50);
     }
 
     /**
-     * Criação do mapa das células vazias do mundo, usado na geração de entidades no mundo
-     * @return HashMap Um HashMap como chave coordenadas de células vazias e como valores as células vazias
+     * Criação de uma lista de células, usada na geração de entidades no mundo
+     * @return Arraylist de células vazias do tipo GRASS
      */
-    public HashMap<Coord, Cell> getEmptyCells(){
-        HashMap<Coord, Cell> res = new HashMap<>();
+    public ArrayList<Cell> getEmptyCells(){
+        ArrayList<Cell> res = new ArrayList<>();
         for(ArrayList<Cell> rows: grid){
             for(Cell c: rows){
                 if(c.getType() == CellType.GRASS){
-                    res.put(c.getCoord(), c);
+                    res.add(c);
                 }
             }
         }
         return res;
     }
 
+    /**
+     * Criação de um organismo
+     * @param emptyCells Lista de células vazias do tipo GRASS
+     * @param type Tipo de organismo, planta ou animal
+     */
+    public void createEntity(ArrayList<Cell> emptyCells, LayerType type) {
+        if(type == LayerType.NONE){
+            throw new IllegalArgumentException("O tipo de organismo não pode ser nulo");
+        }
+
+        Cell selectedCell = Rand.getRandomItem(emptyCells);
+        selectedCell.setCurrentOcupant(type);
+        if(type == LayerType.PLANT){
+            Plant newPlant = new Plant(this, selectedCell.getCoord(), Rand.getRandomEnum(PlantType.class));
+            entities.put(newPlant.getCoords(), newPlant);
+        } else {
+            Animal newAnimal = new Animal(this, selectedCell.getCoord(), Rand.getRandomEnum(AnimalType.class));
+            entities.put(newAnimal.getCoords(), newAnimal);
+        }
+        emptyCells.remove(selectedCell);
+    }
+
+    /**
+     * Geração de organismos no mundo segundo valores passados por paramêtro.
+     * @param plantsRate Taxa de plantas em pourcentagem que vão ser inicializadas após a criação do mundo
+     * @param animalsRate Taxa de animais em pourcentagem que vão ser inicializados após a criação do mundo
+     * @param emptyRate Taxa de células vazias em pourcentagem que vão ser inicializadas após a criação do mundo (células GRASS)
+     */
     public void genEntities(double plantsRate, double animalsRate, double emptyRate){
         if(plantsRate < 0 || plantsRate > 100 || animalsRate < 0 || animalsRate > 100 || emptyRate < 0 || emptyRate > 100){
             throw new IllegalArgumentException("O valor de cada argumento têm de estar entre 0 e 100");
@@ -103,13 +134,50 @@ public class World {
             throw new IllegalArgumentException("A soma das percentagens de inicialização têm que ser igual a 100");
         }
 
-        HashMap<Coord, Cell> emptyCellsMap = new HashMap<>();
-        int availableCells = emptyCellsMap.size();
+        ArrayList<Cell> emptyCells = getEmptyCells();
+        int availableCells = emptyCells.size();
 
+        if(plantsRate > 0){
+            int occupiedCells = (int) ((plantsRate/100.0) * availableCells);
+            for(int i = 0; i < occupiedCells; i++){
+                createEntity(emptyCells, LayerType.PLANT);
+            }
+        }
 
+        if(animalsRate > 0){
+            int occupiedCells = (int) ((animalsRate/100.0) * availableCells);
+            for(int i = 0; i < occupiedCells; i++){
+                createEntity(emptyCells, LayerType.ANIMAL);
+            }
+        }
     }
 
+    public void cleanCorpses() {
+        Iterator<Map.Entry<Coord, Entity>> it = entities.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Entity e = it.next().getValue();
+
+            boolean isRottenAnimal = (e instanceof Animal && e.getDecomposeTimer() >= 1);
+            boolean isRottenPlant = (e instanceof Plant && e.getDecomposeTimer() >= 2);
+
+            if (isRottenAnimal || isRottenPlant) {
+                CellUtils.findCell(this, e.getCoords()).setCurrentOcupant(LayerType.NONE);
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * Atualização do mundo, ou seja como se decorresse um ano, atualiza-se o estado de cada organismo presente no mundo.
+     * Esta atualização tem de respeitar uma ordem específica
+     * 1. Incrementação de idade
+     * 2. Movimentos no caso de animais
+     * 3. Atualização da fome, energia, sede...
+     * 4. Reprodução
+     */
     public void updateEntities(){
+        cleanCorpses();
         for(Entity e : entities.values()){
             e.updateAge();
             if(e instanceof Animal){
@@ -128,11 +196,25 @@ public class World {
         String res = "";
         for(ArrayList<Cell> rows: grid){
             for(Cell c: rows){
-               res += String.valueOf(c.getType().getSymb()) + "  ";
+                char symbol = ' ';
+                if (c.getCurrentOcupant() != LayerType.NONE && entities.containsKey(c.getCoord())) {
+                    Object entity = entities.get(c.getCoord());
+
+                    if (entity instanceof Plant) {
+                        symbol = ((Plant) entity).getType().getSymb();
+                    } else if (entity instanceof Animal) {
+                        symbol = ((Animal) entity).getType().getSymb();
+                    } else {
+                        symbol = '?';
+                    }
+                }
+                else {
+                    symbol = c.getType().getSymb();
+                }
+                res += symbol + "  ";
             }
             res += "\n";
         }
-
         return res;
     }
 

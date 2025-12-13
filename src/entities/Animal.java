@@ -48,7 +48,11 @@ public class Animal extends Entity {
     }
 
     public void updateAge(){
-        if (super.getIsDead()) return;
+        if (super.getIsDead()){
+            super.incrementDecompose();
+            return;
+        }
+
         super.incrementAge();
         if (super.getAge() >= type.getMaxAge()) {
             die();
@@ -57,7 +61,7 @@ public class Animal extends Entity {
 
     public void die() {
         super.setDied();
-        type.setSymb('X');
+        type.setSymb('x');
         System.out.println(type + " died at " + "[" + super.getCoords().getX() + "," + super.getCoords().getY() + "]");
     }
 
@@ -67,5 +71,9 @@ public class Animal extends Entity {
             return true;
         }
         return false;
+    }
+
+    public AnimalType getType(){
+        return type;
     }
 }

@@ -87,7 +87,7 @@ public enum AnimalType implements Edible {
     public int getMaxEnergy() {return MaxEnergy;}
     public int getMaxHunger() {return MaxHunger; }
     public int getMaxThirst() {return MaxThirst; }
-    public int getMaxAge(){return getMaxAge();}
+    public int getMaxAge() {return MaxAge;}
     public int getVision() { return vision; }
     public double getSpendRate() { return spendRate; }
     public int getReproEnergy(){return EnergyReproduction;}
