@@ -3,7 +3,7 @@ package entities;
 import world.Coord;
 import world.World;
 
-public class Plant extends Entity {
+public class Plant extends Entity implements Edible{
     private PlantType type;
     private int energy;
 
@@ -15,7 +15,6 @@ public class Plant extends Entity {
 
     public void die(){
         super.setDied();
-        type.setSymb('X');
         System.out.println(type + " died at " + "[" + super.getCoords().getX() + "," + super.getCoords().getY() + "]");
     }
 
@@ -49,5 +48,10 @@ public class Plant extends Entity {
 
     public PlantType getType(){
         return type;
+    }
+
+    @Override
+    public int getCalories() {
+        return type.getCalories();
     }
 }

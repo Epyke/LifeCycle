@@ -92,7 +92,9 @@ public enum AnimalType implements Edible {
     public double getSpendRate() { return spendRate; }
     public int getReproEnergy(){return EnergyReproduction;}
     public char getSymb() { return symb; }
-    public void setSymb(char newSymb) {symb = newSymb;}
+    public int getAgeReproduction(){
+        return AgeReproduction;
+    }
 
 
     public boolean canEat(Edible food){

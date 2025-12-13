@@ -26,10 +26,10 @@ public class Lake extends Obstacle{
      * @return retorna um valor booleano
      */
     public boolean verifyCoords(int x, int y){
-        if(super.getWorld().getGrid().get(y).get(x).getType() != CellType.GRASS){
-            return false;
-        }
-        return true;
+        Cell c = super.getWorld().getGrid().get(y).get(x);
+        return c.getType() == CellType.GRASS
+                && c.getCurrentOcupant() == LayerType.NONE
+                && c.getHabitat() == HabitatType.NONE;
     }
 
     /**

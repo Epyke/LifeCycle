@@ -31,11 +31,6 @@ public enum PlantType implements Edible {
         return getEnergy;
     }
 
-
-    public void setSymb(char symb){
-        this.symb = symb;
-    }
-
     @Override
     public int getCalories() {
         if(this.symb == 'C'){

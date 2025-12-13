@@ -3,6 +3,7 @@ package world;
 import entities.*;
 import obstacles.Lake;
 import obstacles.Rock;
+import structures.HabitatType;
 import utils.CellUtils;
 import utils.Rand;
 
@@ -98,11 +99,28 @@ public class World {
     }
 
     /**
+     * Nascimento de animal após reprodução
+     * @param c Coordenadas do recém nascido
+     * @param type Tipo de animal
+     * @return boolean se foi criado com sucesso
+     */
+    public boolean bornEntity(Coord c, AnimalType type){
+        Cell currCell = CellUtils.findCell(this, c);
+        if (currCell.getCurrentOcupant() == LayerType.NONE && currCell.getHabitat() == HabitatType.NONE && currCell.getType() == CellType.GRASS){
+            Animal baby = new Animal(this, c, type);
+            entities.put(c, baby);
+            currCell.setCurrentOcupant(LayerType.ANIMAL);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Criação de um organismo
      * @param emptyCells Lista de células vazias do tipo GRASS
      * @param type Tipo de organismo, planta ou animal
      */
-    public void createEntity(ArrayList<Cell> emptyCells, LayerType type) {
+    public void createEntityRandom(ArrayList<Cell> emptyCells, LayerType type) {
         if(type == LayerType.NONE){
             throw new IllegalArgumentException("O tipo de organismo não pode ser nulo");
         }
@@ -140,16 +158,56 @@ public class World {
         if(plantsRate > 0){
             int occupiedCells = (int) ((plantsRate/100.0) * availableCells);
             for(int i = 0; i < occupiedCells; i++){
-                createEntity(emptyCells, LayerType.PLANT);
+                createEntityRandom(emptyCells, LayerType.PLANT);
             }
         }
 
         if(animalsRate > 0){
             int occupiedCells = (int) ((animalsRate/100.0) * availableCells);
             for(int i = 0; i < occupiedCells; i++){
-                createEntity(emptyCells, LayerType.ANIMAL);
+                createEntityRandom(emptyCells, LayerType.ANIMAL);
             }
         }
+    }
+
+    /**
+     * Remover uma entidade do mundo
+     * @param c coordenadas do organismo que vai ser removido
+     */
+    public void removeEntity(Coord c) {
+        if (entities.containsKey(c)) {
+            entities.remove(c); // Remove from HashMap
+            CellUtils.findCell(this, c).setCurrentOcupant(LayerType.NONE);
+        }
+    }
+
+    /**
+     * Mover um organismo no mundo
+     * @param oldPos Coordenadas antigas do organismo
+     * @param newPos Coordenadas novas do organismo
+     */
+    public void moveEntity(Coord oldPos, Coord newPos) {
+        if(!entities.containsKey(oldPos)){
+            return;
+        }
+
+        Entity e = entities.get(oldPos);
+
+        entities.remove(oldPos);
+
+        e.setCoords(newPos);
+
+        entities.put(newPos, e);
+
+        CellUtils.findCell(this, oldPos).setCurrentOcupant(LayerType.NONE);
+
+        LayerType newLayer;
+        if(e instanceof  Plant){
+            newLayer = LayerType.PLANT;
+        } else {
+            newLayer = LayerType.ANIMAL;
+        }
+        CellUtils.findCell(this, newPos).setCurrentOcupant(newLayer);
     }
 
     public void cleanCorpses() {
@@ -178,7 +236,17 @@ public class World {
      */
     public void updateEntities(){
         cleanCorpses();
-        for(Entity e : entities.values()){
+        //Criar uma copia das entidades atuais
+        //Porque durante uma iteração de um HasMap se um organismo se mover, a sua chave altera, o que faz com o que sistema crasha
+        //Assim usamos uma cópia (ArrayList) do HashMaps para ler as coordenadas das entidades e altera-las.
+        ArrayList<Entity> currentEntities = new ArrayList<>(entities.values());
+
+        for(Entity e : currentEntities){
+            //Verificação se o organismo foi retirado do mundo
+            if(!entities.containsValue(e)) {
+                continue;
+            }
+
             e.updateAge();
             if(e instanceof Animal){
                 ((Animal) e).move();
@@ -201,9 +269,17 @@ public class World {
                     Object entity = entities.get(c.getCoord());
 
                     if (entity instanceof Plant) {
-                        symbol = ((Plant) entity).getType().getSymb();
+                        if(((Plant) entity).getIsDead()){
+                            symbol = 'X';
+                        } else {
+                            symbol = ((Plant) entity).getType().getSymb();
+                        }
                     } else if (entity instanceof Animal) {
-                        symbol = ((Animal) entity).getType().getSymb();
+                        if(((Animal) entity).getIsDead()){
+                            symbol = 'x';
+                        } else {
+                            symbol = ((Animal) entity).getType().getSymb();
+                        }
                     } else {
                         symbol = '?';
                     }
@@ -224,5 +300,9 @@ public class World {
 
     public int getSize(){
         return size;
+    }
+
+    public HashMap<Coord, Entity> getEntities(){
+        return entities;
     }
 }

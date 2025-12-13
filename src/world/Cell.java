@@ -14,6 +14,8 @@ public class Cell {
     public Cell(Coord coords, CellType type){
         this.coords = coords;
         this.type = type;
+        currentOcupant = LayerType.NONE;
+        habitat = HabitatType.NONE;
     }
 
     public LayerType getCurrentOcupant() {

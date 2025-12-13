@@ -1,5 +1,6 @@
 package utils;
 
+import entities.AnimalType;
 import structures.HabitatType;
 import world.*;
 
@@ -47,6 +48,23 @@ public class Adjacent {
             int ny = y + a[1];
 
             if(verifyCoords(w, nx, ny) && w.getGrid().get(ny).get(nx).getType() == type && w.getGrid().get(ny).get(nx).getCurrentOcupant() == layerType && w.getGrid().get(ny).get(nx).getHabitat() == habitatType){
+                frontier.add(w.getGrid().get(ny).get(nx));
+            }
+        }
+        return frontier;
+    }
+
+    public static ArrayList<Cell> getOccupiedAdjacents(World w, Cell c){
+        ArrayList<Cell> frontier = new ArrayList<>();
+        Coord currCoordsCell = c.getCoord();
+        int x = currCoordsCell.getX();
+        int y = currCoordsCell.getY();
+
+        for(int[] a: directions){
+            int nx = x + a[0];
+            int ny = y + a[1];
+
+            if(verifyCoords(w, nx, ny) && w.getGrid().get(ny).get(nx).getCurrentOcupant() != LayerType.NONE ){
                 frontier.add(w.getGrid().get(ny).get(nx));
             }
         }
