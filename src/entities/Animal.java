@@ -69,11 +69,90 @@ public class Animal extends Entity implements Edible{
         return false;
     }
 
+    public boolean searchPartner(){
+        if (this.gender != Gender.MALE) return false;
+
+        if (currentEnergy < type.getReproEnergy() || getAge() < type.getAgeReproduction()) {
+            return false;
+        }
+
+        int vision = type.getVision();
+        Coord myPos = super.getCoords();
+        World w = super.getWorld();
+
+        Coord bestTarget = null;
+        int minDistance = Integer.MAX_VALUE;
+
+
+        for (Entity e : w.getEntities().values()) {
+            if (!(e instanceof Animal)) continue;
+            Animal target = (Animal) e;
+
+            if (target.getType() == this.type
+                    && target.getGender() == Gender.FEMALE
+                    && !target.getIsDead() && target.getEnergy() >= type.getReproEnergy()){
+
+                //Calculo da distancia de Manhatan
+                int dist = Math.abs(target.getCoords().getX() - myPos.getX())
+                        + Math.abs(target.getCoords().getY() - myPos.getY());
+
+                if (dist <= vision && dist < minDistance) {
+                    minDistance = dist;
+                    bestTarget = target.getCoords();
+                }
+            }
+        }
+
+        if (bestTarget != null) {
+            return moveToTarget(bestTarget);
+        }
+
+        return false;
+    }
+
+    private boolean moveToTarget(Coord target) {
+        int dx = target.getX() - super.getCoords().getX();
+        int dy = target.getY() - super.getCoords().getY();
+
+        int stepX = Integer.compare(dx, 0);
+        int stepY = Integer.compare(dy, 0);
+
+        if (stepX != 0) {
+            if (tryMove(super.getCoords().getX() + stepX, super.getCoords().getY())) return true;
+        }
+
+        if (stepY != 0) {
+            if (tryMove(super.getCoords().getX(), super.getCoords().getY() + stepY)) return true;
+        }
+
+        return false;
+    }
+
+    private boolean tryMove(int x, int y) {
+        World w = super.getWorld();
+        if (!Adjacent.verifyCoords(w, x, y)) return false;
+
+        Cell targetCell = CellUtils.findCell(w, x, y);
+
+        if (targetCell.getCurrentOcupant() == LayerType.NONE
+                && targetCell.getType() == CellType.GRASS) {
+            w.moveEntity(super.getCoords(), new Coord(x, y));
+            currentEnergy -= type.getEnergyMovement();
+            return true;
+        }
+        return false;
+    }
+
     public boolean move(){
         if(getIsDead()) return false;
         if(eat()){
             return true;
         }
+
+        if (searchPartner()) {
+            return true;
+        }
+
         Cell actualCell = CellUtils.findCell(super.getWorld(), super.getCoords());
         ArrayList<Cell> adjs = Adjacent.getAdjacents(super.getWorld(), actualCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
         if(adjs.isEmpty()){

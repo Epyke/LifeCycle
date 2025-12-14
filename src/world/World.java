@@ -289,8 +289,8 @@ public class World {
             }
             e.updateStats();
             e.reproduction();
-            statsManager.incrementYear();
         }
+        statsManager.incrementYear();
     }
 
     /**
