@@ -6,6 +6,7 @@ import obstacles.Rock;
 import structures.HabitatType;
 import utils.CellUtils;
 import utils.Rand;
+import world.stat.StatsManager;
 
 import java.nio.charset.CoderResult;
 import java.sql.Array;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class World {
     private ArrayList<ArrayList<Cell>> grid;
     private final int size;
-
+    private StatsManager statsManager;
     /**
      * Um unico HashMap para simplificar a atualização dos organismos
      */
@@ -30,6 +31,7 @@ public class World {
         grid = new ArrayList<>();
         this.size = size;
         entities = new HashMap<>();
+        statsManager = new StatsManager();
         if (!(size > 0)){
             throw new IllegalArgumentException("Size needs to be > 0");
         }
@@ -122,6 +124,7 @@ public class World {
             Animal baby = new Animal(this, c, type);
             entities.put(c, baby);
             currCell.setCurrentOcupant(LayerType.ANIMAL);
+            statsManager.registerSpawn(type.toString(), true);
             return true;
         }
         return false;
@@ -139,6 +142,7 @@ public class World {
             Plant sapling = new Plant(this, c, type);
             entities.put(c, sapling);
             currCell.setCurrentOcupant(LayerType.PLANT);
+            statsManager.registerSpawn(type.toString(), true);
             return true;
         }
         return false;
@@ -159,10 +163,13 @@ public class World {
         if(type == LayerType.PLANT){
             Plant newPlant = new Plant(this, selectedCell.getCoord(), Rand.getRandomEnum(PlantType.class));
             entities.put(newPlant.getCoords(), newPlant);
+            statsManager.registerSpawn(newPlant.getType().toString(), false);
         } else {
             Animal newAnimal = new Animal(this, selectedCell.getCoord(), Rand.getRandomEnum(AnimalType.class));
             entities.put(newAnimal.getCoords(), newAnimal);
+            statsManager.registerSpawn(newAnimal.getType().toString(), false);
         }
+
         emptyCells.remove(selectedCell);
     }
 
@@ -282,6 +289,7 @@ public class World {
             }
             e.updateStats();
             e.reproduction();
+            statsManager.incrementYear();
         }
     }
 
@@ -333,5 +341,9 @@ public class World {
 
     public HashMap<Coord, Entity> getEntities(){
         return entities;
+    }
+
+    public StatsManager getStats() {
+        return statsManager;
     }
 }

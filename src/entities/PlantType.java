@@ -1,8 +1,7 @@
 package entities;
 
 public enum PlantType implements Edible {
-    CARROT('C', 2, 15, 30, 50, 5),
-    OAK('O', 15, 30, 80, 100,5);
+    PLANT('P', 2, 15, 25, 50, 5, 20);
 
     private char symb;
     private int ageReproduction;
@@ -10,14 +9,16 @@ public enum PlantType implements Edible {
     private int energyReproduction;
     private int maxEnergy;
     private int getEnergy;
+    private int calories;
 
-    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy){
+    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy, int calories){
         this.symb = symb;
         this.ageReproduction = ageReproduction;
         this.maxAge = maxAge;
         this.energyReproduction = energyReproduction;
         this.maxEnergy = maxEnergy;
         this.getEnergy = getEnergy;
+        this.calories = calories;
     }
 
     public char getSymb(){
@@ -33,9 +34,6 @@ public enum PlantType implements Edible {
 
     @Override
     public int getCalories() {
-        if(this.symb == 'C'){
-            return 20;
-        }
-        return 0;
+        return calories;
     }
 }

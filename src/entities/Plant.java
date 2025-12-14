@@ -22,9 +22,10 @@ public class Plant extends Entity implements Edible{
         trueMaxAge = Rand.getRandomNmb((int)(type.getMaxAge()*0.8), type.getMaxAge());
     }
 
-    public void die(){
+    public void die(String cause){
+        if (super.getIsDead()) return;
+        super.getWorld().getStats().registerDeath(this.type.toString(), cause);
         super.setDied();
-        System.out.println(type + " died at " + "[" + super.getCoords().getX() + "," + super.getCoords().getY() + "]");
     }
 
     public void updateAge(){
@@ -34,7 +35,7 @@ public class Plant extends Entity implements Edible{
         }
         super.incrementAge();
         if(super.getAge() > type.getMaxAge()){
-            die();
+            die("natural");
         }
     }
 
@@ -53,26 +54,24 @@ public class Plant extends Entity implements Edible{
             reproductionCooldown--;
             return false;
         }
-
+        if(reproductionCooldown < 0){
+            reproductionCooldown = 0;
+        }
         //Adicionar uma mecánica de sorte na reprodução
         //Para evitar o crescimento exponencial de plantas
-        int randomNumber = Rand.getRandomNmb(20);
-        if(randomNumber != 1){
-            return false;
-        }
+        if(Rand.checkPercentage(10)){
+            Cell currentCell = CellUtils.findCell(super.getWorld(), super.getCoords());
+            Cell plantSlot = Adjacent.getFirstAdjacent(super.getWorld(), currentCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
 
-        Cell currentCell = CellUtils.findCell(super.getWorld(), super.getCoords());
-        Cell plantSlot = Adjacent.getFirstAdjacent(super.getWorld(), currentCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
+            if(plantSlot == null){
+                return false;
+            }
 
-        if(plantSlot == null){
-            return false;
-        }
-
-        if(super.getWorld().bornEntity(plantSlot.getCoord(), this.type)){
-            this.energy -= type.getEnergyReproduction();
-            System.out.println("New " + this.type + " grew at [" + plantSlot.getCoord().getX() + "," + plantSlot.getCoord().getY() + "]");
-            reproductionCooldown = 25;
-            return true;
+            if(super.getWorld().bornEntity(plantSlot.getCoord(), this.type)){
+                this.energy -= type.getEnergyReproduction();
+                reproductionCooldown = 2;
+                return true;
+            }
         }
         return false;
     }

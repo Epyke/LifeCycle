@@ -9,7 +9,7 @@ import java.util.Set;
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
     WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, null, 'W'),
-    RABBIT(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.CARROT), 'R');
+    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.PLANT), 'S');
 
     private static final HashMap<AnimalType, Set<AnimalType>> huntMap = new HashMap<>();
 
@@ -18,7 +18,7 @@ public enum AnimalType implements Edible {
     //Rever esta parte do static{} e porque usar Set e não HashSet
     static {
         //Set basic hunter --> preys
-        huntMap.put(WOLF, Set.of(RABBIT));
+        huntMap.put(WOLF, Set.of(SHEEP));
 
         //Get auto the inversed map prey ---> hunters
         for(AnimalType hunter : huntMap.keySet()) {
@@ -94,6 +94,9 @@ public enum AnimalType implements Edible {
     public char getSymb() { return symb; }
     public int getAgeReproduction(){
         return AgeReproduction;
+    }
+    public int getEnergyMovement(){
+        return EnergyMovement;
     }
 
 

@@ -76,4 +76,12 @@ public class Rand {
 
         return list.get(index);
     }
+
+    public static boolean checkPercentage(int percentage) {
+        if (percentage < 0 || percentage > 100) {
+            throw new IllegalArgumentException("O valor da pourcentagem tem de estar entre 0 e 100");
+        }
+
+        return rng.nextInt(100) < percentage;
+    }
 }

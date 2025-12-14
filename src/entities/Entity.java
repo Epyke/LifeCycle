@@ -55,7 +55,7 @@ public abstract class Entity {
     }
 
     public abstract void updateStats();
-    public abstract void die();
+    public abstract void die(String cause);
     public abstract void updateAge();
     public abstract boolean reproduction();
 }

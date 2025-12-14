@@ -51,15 +51,17 @@ public class Animal extends Entity implements Edible{
                 if (type.canEat(getEdibleType(e))) {
                     currentFood += food.getCalories();
 
+
                     if (this.currentFood > type.getMaxHunger()) {
                         this.currentFood = type.getMaxHunger();
                     }
+
+                    e.die("eaten");
 
                     super.getWorld().removeEntity(e.getCoords());
 
                     super.getWorld().moveEntity(this.getCoords(), e.getCoords());
 
-                    System.out.println(this.type + " ate a " + getEdibleType(e) + " [" + e.getCoords().getX() + "," + e.getCoords().getY() + "]");
                     return true;
                 }
             }
@@ -79,6 +81,7 @@ public class Animal extends Entity implements Edible{
         }
         int randIndex = Rand.getRandomNmb(adjs.size() - 1);
         super.getWorld().moveEntity(super.getCoords(), adjs.get(randIndex).getCoord());
+        currentEnergy -= type.getEnergyMovement();
         return true;
     }
 
@@ -103,12 +106,29 @@ public class Animal extends Entity implements Edible{
         }
 
         if(currentEnergy <= 0){
-            currentHealth -= 25;
-            currentHealth = Math.max(0, currentHealth);
+            currentHealth -= 10;
         }
 
+        if(currentFood <= 0){
+            currentHealth -= 25;
+        }
+
+        if(currentWater <= 0){
+            currentHealth -= 25;
+        }
+
+        currentHealth = Math.max(0, currentHealth);
+
         if(currentHealth <= 0){
-            die();
+            String cause = "energy";
+
+            if (currentWater <= 0) {
+                cause = "thirst";
+            } else if (currentFood <= 0) {
+                cause = "starved";
+            }
+
+            die(cause);
         }
     }
 
@@ -120,13 +140,14 @@ public class Animal extends Entity implements Edible{
 
         super.incrementAge();
         if (super.getAge() >= trueMaxAge) {
-            die();
+            die("natural");
         }
     }
 
-    public void die() {
+    public void die(String cause) {
+        if (super.getIsDead()) return;
         super.setDied();
-        System.out.println(type + " died at " + "[" + super.getCoords().getX() + "," + super.getCoords().getY() + "]");
+        super.getWorld().getStats().registerDeath(this.type.toString(), cause);
     }
 
     public boolean reproduction(){
@@ -134,27 +155,28 @@ public class Animal extends Entity implements Edible{
             return false;
         }
         if(currentEnergy >= type.getReproEnergy() && super.getAge() >= type.getAgeReproduction()){
-            Cell currCell = CellUtils.findCell(super.getWorld(), super.getCoords());
-            ArrayList<Cell> neighbors = Adjacent.getOccupiedAdjacents(super.getWorld(), currCell);
-            if (neighbors.isEmpty()){
-                return false;
-            }
-            for(Cell c: neighbors){
-                Entity e = super.getWorld().getEntities().get(c.getCoord());
-                if(e instanceof Animal){
-                    Animal partner = (Animal) e;
-                    if(partner.type == type && partner.getAge() >= type.getAgeReproduction() && partner.getEnergy() >= type.getReproEnergy() && partner.getGender() == Gender.MALE){
-                        Cell babySlot = Adjacent.getFirstAdjacent(super.getWorld(), currCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
-                        if(babySlot == null){
+            if(Rand.checkPercentage(30)){
+                Cell currCell = CellUtils.findCell(super.getWorld(), super.getCoords());
+                ArrayList<Cell> neighbors = Adjacent.getOccupiedAdjacents(super.getWorld(), currCell);
+                if (neighbors.isEmpty()){
+                    return false;
+                }
+                for(Cell c: neighbors){
+                    Entity e = super.getWorld().getEntities().get(c.getCoord());
+                    if(e instanceof Animal){
+                        Animal partner = (Animal) e;
+                        if(partner.type == type && partner.getAge() >= type.getAgeReproduction() && partner.getEnergy() >= type.getReproEnergy() && partner.getGender() == Gender.MALE){
+                            Cell babySlot = Adjacent.getFirstAdjacent(super.getWorld(), currCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
+                            if(babySlot == null){
+                                return false;
+                            }
+                                if(super.getWorld().bornEntity(babySlot.getCoord(), type)){
+                                    partner.costEnergy(type.getReproEnergy());
+                                    currentEnergy -= type.getReproEnergy();
+                                    return true;
+                                }
                             return false;
                         }
-                            if(super.getWorld().bornEntity(babySlot.getCoord(), type)){
-                                partner.costEnergy(type.getReproEnergy());
-                                currentEnergy -= type.getReproEnergy();
-                                System.out.println("New " + this.type + " born at [" + babySlot.getCoord().getX() + "," + babySlot.getCoord().getY() + "]");
-                                return true;
-                            }
-                        return false;
                     }
                 }
             }
