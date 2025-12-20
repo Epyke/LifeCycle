@@ -8,8 +8,8 @@ import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, null, 'W', 25),
-    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.PLANT), 'S', 75);
+    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, null, 'W', 30),
+    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.PLANT), 'S', 70);
 
     private static final HashMap<AnimalType, Set<AnimalType>> huntMap = new HashMap<>();
 
