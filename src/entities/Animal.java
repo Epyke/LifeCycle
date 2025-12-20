@@ -47,7 +47,6 @@ public class Animal extends Entity implements Edible{
             if(e instanceof Edible) {
                 Edible food = (Edible) e;
 
-
                 if (type.canEat(getEdibleType(e))) {
                     currentFood += food.getCalories();
 

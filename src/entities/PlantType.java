@@ -1,7 +1,7 @@
 package entities;
 
 public enum PlantType implements Edible {
-    PLANT('P', 2, 15, 25, 50, 5, 20);
+    PLANT('P', 2, 15, 25, 50, 5, 20, 100.0);
 
     private char symb;
     private int ageReproduction;
@@ -10,8 +10,9 @@ public enum PlantType implements Edible {
     private int maxEnergy;
     private int getEnergy;
     private int calories;
+    private double SpawnRate;
 
-    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy, int calories){
+    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy, int calories, double SpawnRate) {
         this.symb = symb;
         this.ageReproduction = ageReproduction;
         this.maxAge = maxAge;
@@ -19,6 +20,7 @@ public enum PlantType implements Edible {
         this.maxEnergy = maxEnergy;
         this.getEnergy = getEnergy;
         this.calories = calories;
+        this.SpawnRate = SpawnRate;
     }
 
     public char getSymb(){
@@ -31,6 +33,7 @@ public enum PlantType implements Edible {
     public int getEnergyRate(){
         return getEnergy;
     }
+    public double getSpawnRate(){return SpawnRate;}
 
     @Override
     public int getCalories() {

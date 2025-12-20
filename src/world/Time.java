@@ -36,7 +36,6 @@ public class Time {
             System.out.println("Years: " + i + "\n");
             w.updateEntities();
             System.out.println(w.worldView());
-            System.out.println(w.getStats().currYearStats());
             i++;
         }
         System.out.println(w.getStats().finalStats());
