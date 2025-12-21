@@ -1,5 +1,7 @@
 package world.stat;
 
+import entities.AnimalType;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,57 +33,55 @@ public class StatsManager {
     public void registerSpawn(String speciesName, boolean isReproduction) {
         SpecieStat s = getSpecies(speciesName);
 
-        s.total_created++;
-        s.current_alive++;
+        s.increment_total_created();
+        s.increment_current_alive();
 
-        globalStats.total_entities_ever_created++;
-        globalStats.current_entities_alive++;
+        globalStats.increment_total_entities_ever_created();
+        globalStats.increment_current_entities_alive();
 
-        currYearStat.born_this_turn++;
+        currYearStat.increment_born_this_turn();
 
         if (isReproduction) {
-            globalStats.total_born_reproduction++;
+            globalStats.increment_total_born_reproduction();
         }
 
     }
 
     public void registerDeath(String speciesName, String cause) {
-        // Get or create the stats for this species
         SpecieStat s = speciesStatsMap.computeIfAbsent(speciesName, k -> new SpecieStat());
 
-        // 1. General counters
-        s.deaths++;
-        s.current_alive--;
+        s.increment_deaths();
+        s.decrease_current_alive();
 
-        globalStats.total_deaths++;
-        globalStats.current_entities_alive--;
-        currYearStat.died_this_turn++;
+        globalStats.increment_total_deaths();
+        globalStats.decrease_current_entities_alive();
+        currYearStat.increment_born_this_turn();
 
         // 2. Specific Cause counters
         switch (cause) {
             case "starved":
-                s.starved++;
+                s.increment_starved();
                 break;
             case "thirst":
-                s.thirst++;
+                s.increment_thirst();
                 break;
             case "energy":
-                s.energy++;
+                s.increment_energy();
                 break;
             case "natural":
-                s.natural++;
+                s.increment_natural();
                 break;
             case "eaten":
-                s.eaten++;
-                globalStats.total_eaten++;
-                currYearStat.eaten_this_turn++;
+                s.increment_total_eaten();
+                globalStats.increment_total_eaten();
+                currYearStat.increment_eaten_this_turn();
                 break;
         }
     }
 
     public void registerEaten(String speciesName) {
-        globalStats.total_eaten++;
-        currYearStat.eaten_this_turn++;
+        globalStats.increment_total_eaten();
+        currYearStat.increment_eaten_this_turn();
         registerDeath(speciesName, "eaten");
     }
 
@@ -98,9 +98,9 @@ public class StatsManager {
         sb.append("       STATISTICS - YEAR ").append(currYear).append("\n");
         sb.append(border);
 
-        sb.append(String.format("  %-20s : %d\n", "Born", currYearStat.born_this_turn));
-        sb.append(String.format("  %-20s : %d\n", "Died", currYearStat.died_this_turn));
-        sb.append(String.format("  %-20s : %d\n", "Eaten", currYearStat.eaten_this_turn));
+        sb.append(String.format("  %-20s : %d\n", "Born", currYearStat.getBorn_this_turn()));
+        sb.append(String.format("  %-20s : %d\n", "Died", currYearStat.getDied_this_turn()));
+        sb.append(String.format("  %-20s : %d\n", "Eaten", currYearStat.getEaten_this_turn()));
         sb.append(subBorder);
         return sb.toString();
     }
@@ -116,10 +116,10 @@ public class StatsManager {
 
         // 2. Global Totals
         sb.append(" [GLOBAL]\n");
-        sb.append(String.format("  %-20s : %d\n", "Current Alive", globalStats.current_entities_alive));
-        sb.append(String.format("  %-20s : %d\n", "Total Created", globalStats.total_entities_ever_created));
-        sb.append(String.format("  %-20s : %d\n", "Total Deaths", globalStats.total_deaths));
-        sb.append(String.format("  %-20s : %d\n", "Total Born (Repro)", globalStats.total_born_reproduction));
+        sb.append(String.format("  %-20s : %d\n", "Current Alive", globalStats.getCurrent_entities_alive()));
+        sb.append(String.format("  %-20s : %d\n", "Total Created", globalStats.getTotal_entities_ever_created()));
+        sb.append(String.format("  %-20s : %d\n", "Total Deaths", globalStats.getTotal_deaths()));
+        sb.append(String.format("  %-20s : %d\n", "Total Born (Repro)", globalStats.getTotal_born_reproduction()));
         sb.append(subBorder);
 
         // 3. Species Breakdown
@@ -135,14 +135,14 @@ public class StatsManager {
 
             sb.append(String.format("  %-10s | %-7d | %-7d | %-7d | %-7d | %-7d | %-7d | %7d | %7d \n",
                     name,
-                    data.current_alive,
-                    data.total_created,
-                    data.deaths,
-                    data.starved,
-                    data.thirst,
-                    data.energy,
-                    data.natural,
-                    data.eaten));
+                    data.getCurrent_alive(),
+                    data.getTotal_created(),
+                    data.getDeaths(),
+                    data.getStarved(),
+                    data.getThirst(),
+                    data.getEnergy(),
+                    data.getNatural(),
+                    data.getEaten()));
         }
         sb.append(border);
 

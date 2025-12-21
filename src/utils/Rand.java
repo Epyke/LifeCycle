@@ -43,6 +43,16 @@ public class Rand {
         return rng.nextInt(range) + min;
     }
 
+    /**
+     * Metodo que retorna um valor double aleatorio dentro de um valor máximo, usado no sistema de inicializacao de organismos
+     * @param max
+     * @return
+     */
+    public static double getDouble(double max) {
+        if (max < 0) throw new IllegalArgumentException("Max must be positive");
+        return rng.nextDouble() * max;
+    }
+
     //Uso do Google Gemini porque ainda não demos esta parte da matéria em prog 2
 
     /**

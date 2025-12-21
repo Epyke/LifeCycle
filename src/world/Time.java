@@ -32,7 +32,7 @@ public class Time {
 
     public void specieExinction(AnimalType type){
         int i = 0;
-        while (w.getStats().getSpecieStat().get(type.toString()).current_alive != 0){
+        while (w.getStats().getSpecieStat().get(type.toString()).getCurrent_alive() != 0){
             System.out.println("Years: " + i + "\n");
             w.updateEntities();
             System.out.println(w.worldView());
@@ -43,7 +43,7 @@ public class Time {
 
     public void specieExinction(PlantType type){
         int i = 0;
-        while (w.getStats().getSpecieStat().get(type.toString()).current_alive != 0){
+        while (w.getStats().getSpecieStat().get(type.toString()).getCurrent_alive() != 0){
             System.out.println("Years: " + i + "\n");
             w.updateEntities();
             System.out.println(w.worldView());

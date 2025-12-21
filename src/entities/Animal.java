@@ -168,11 +168,11 @@ public class Animal extends Entity implements Edible{
 
         int energyCost = (int)(type.getSpendRate() * type.getMaxEnergy());
         int foodCost = (int)((type.getSpendRate() * 1.5) * type.getMaxHunger());
-        int waterCost = (int)((type.getSpendRate() * 2) * type.getMaxThirst());
+        //int waterCost = (int)((type.getSpendRate() * 2) * type.getMaxThirst());
 
         currentEnergy = Math.max(0, currentEnergy - energyCost);
         currentFood   = Math.max(0, currentFood - foodCost);
-        currentWater  = Math.max(0, currentWater - waterCost);
+        //currentWater  = Math.max(0, currentWater - waterCost);
 
         if(currentFood > (type.getMaxHunger()*0.65) && currentWater > (type.getMaxThirst()*0.65)){
             int energyGain = (int)((type.getSpendRate() * 2) * type.getMaxEnergy());
@@ -190,6 +190,7 @@ public class Animal extends Entity implements Edible{
         if(currentFood <= 0){
             currentHealth -= 25;
         }
+
 
         if(currentWater <= 0){
             currentHealth -= 25;

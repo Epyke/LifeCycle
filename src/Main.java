@@ -7,5 +7,5 @@ public static void main(){
   World world1 = new World(30);
   world1.worldGen();
   Time worldTime = new Time(world1);
-  worldTime.giveTime(50);
+  worldTime.specieExinction(AnimalType.WOLF);
 }

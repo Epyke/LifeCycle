@@ -39,4 +39,22 @@ public enum PlantType implements Edible {
     public int getCalories() {
         return calories;
     }
+
+    /**
+     * Obter uma especie de planta, consoante a sua percentagem de aparição
+     * @return O tipo de especie que vai aparecer
+     */
+    public static PlantType getRandomWeighted() {
+        double r = utils.Rand.getDouble(100.0);
+        double cumulative = 0.0;
+
+        for (PlantType type : PlantType.values()) {
+            cumulative += type.getSpawnRate(); // Ensure this getter exists
+            if (r <= cumulative) {
+                return type;
+            }
+        }
+        return PlantType.values()[0];
+    }
 }
+

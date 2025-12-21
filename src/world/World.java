@@ -67,6 +67,8 @@ public class World {
      * Generação do mundo, incluido obstaculos do mapa.
      */
     public void worldGen(){
+        //Se a percentagem de aparicao das especies, nao estiver correta, nem vale a pena criar um mundo
+        verifySpawnRates();
         for(int i = 0; i < size; i++){
             grid.add(new ArrayList<Cell>());
         }
@@ -149,6 +151,27 @@ public class World {
     }
 
     /**
+     * Verificar se os percentagems de aparicao de cada especie estao corretas
+     */
+    private void verifySpawnRates() {
+        double animalSum = 0;
+        for (AnimalType t : AnimalType.values()) {
+            animalSum += t.getSpawnRate();
+        }
+        if (animalSum != 100.0) {
+            throw new RuntimeException("A soma das percentagems de aparicao de cada especies de animal tem que ser 100, a atual: " + animalSum);
+        }
+
+        double plantSum = 0;
+        for (PlantType t : PlantType.values()) {
+            plantSum += t.getSpawnRate();
+        }
+        if (plantSum != 100.0) {
+            throw new RuntimeException("A soma das percentagems de aparicao de cada especies de planta tem que ser 100, a atual: " + plantSum);
+        }
+    }
+
+    /**
      * Criação de um organismo
      * @param emptyCells Lista de células vazias do tipo GRASS
      * @param type Tipo de organismo, planta ou animal
@@ -161,11 +184,11 @@ public class World {
         Cell selectedCell = Rand.getRandomItem(emptyCells);
         selectedCell.setCurrentOcupant(type);
         if(type == LayerType.PLANT){
-            Plant newPlant = new Plant(this, selectedCell.getCoord(), Rand.getRandomEnum(PlantType.class));
+            Plant newPlant = new Plant(this, selectedCell.getCoord(), PlantType.getRandomWeighted());
             entities.put(newPlant.getCoords(), newPlant);
             statsManager.registerSpawn(newPlant.getType().toString(), false);
         } else {
-            Animal newAnimal = new Animal(this, selectedCell.getCoord(), Rand.getRandomEnum(AnimalType.class));
+            Animal newAnimal = new Animal(this, selectedCell.getCoord(), AnimalType.getRandomWeighted());
             entities.put(newAnimal.getCoords(), newAnimal);
             statsManager.registerSpawn(newAnimal.getType().toString(), false);
         }

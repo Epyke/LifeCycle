@@ -8,20 +8,22 @@ import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, null, 'W', 30),
-    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, Set.of(PlantType.PLANT), 'S', 70);
+    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10),
+    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90);
 
-    private static final HashMap<AnimalType, Set<AnimalType>> huntMap = new HashMap<>();
+    private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 
-    private static final HashMap<AnimalType, Set<AnimalType>> preyMap = new HashMap<>();
+    private static final HashMap<Edible, HashSet<AnimalType>> preyMap = new HashMap<>();
 
     static {
-        huntMap.put(WOLF, Set.of(SHEEP));
+        huntMap.put(WOLF, new HashSet<>(Set.of(SHEEP)));
+        huntMap.put(SHEEP, new HashSet<>(Set.of(PlantType.PLANT)));
 
+        //Geracao do HashMap inverso ao huntMap, key: presa, values: cacadores
         for(AnimalType hunter : huntMap.keySet()) {
-            for(AnimalType prey: huntMap.get(hunter)) {
+            for(Edible food: huntMap.get(hunter)) {
                 //Em qualquer situação o metodo add vai atuar sobre o HashSet
-                preyMap.computeIfAbsent(prey, k -> new HashSet<>()).add(hunter);
+                preyMap.computeIfAbsent(food, k -> new HashSet<>()).add(hunter);
             }
         }
     }
@@ -43,12 +45,11 @@ public enum AnimalType implements Edible {
     private int CaloriesValue;
 
     private HabitatType habitat;
-    private Set<PlantType> plantDiet;
     private double spawnRate;
 
     private char symb;
 
-    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, Set<PlantType> plantDiet, char symb, double spawnRate) {
+    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, char symb, double spawnRate) {
         this.Maxhealth = hp;
         this.MaxEnergy = energy;
         this.MaxHunger = food;
@@ -62,13 +63,8 @@ public enum AnimalType implements Edible {
         this.AgeReproduction = ageReproduction;
         this.CaloriesValue = CaloriesValue;
         this.habitat = habitat;
-        this.plantDiet = plantDiet;
         this.symb = symb;
         this.spawnRate = spawnRate;
-    }
-
-    public Set<AnimalType> getPredators() {
-        return huntMap.getOrDefault(this, null);
     }
 
     @Override
@@ -93,18 +89,38 @@ public enum AnimalType implements Edible {
     }
     public double getSpawnRate(){return spawnRate;}
 
-    public boolean canEat(Edible food){
-        if(food instanceof PlantType) {
-            if (this.plantDiet == null) return false;
-            return plantDiet.contains((PlantType)food);
-        }
-
-        if (food instanceof AnimalType) {
-            Set<AnimalType> myPrey = huntMap.get(this);
-            return myPrey != null && myPrey.contains(food);
-        }
-        return false;
+    /**
+     * Metodo que verifica a existencia de predadores da especie
+     * @return retorna um HashSet com as espécies predadoras da espécie
+     */
+    public HashSet<AnimalType> getPredators() {
+        return preyMap.getOrDefault(this, null);
     }
 
+    /**
+     * Metodo que verifica se o objeto que implementa a interface Edible, é comestivel pela especie de animal
+     * @param food
+     * @return
+     */
+    public boolean canEat(Edible food){
+        Set<Edible> diet = huntMap.get(this);
+        return diet != null && diet.contains(food);
+    }
 
+    /**
+     * Obter uma especie de animal, consoante a sua percentagem de aparição
+     * @return O tipo de especie que vai aparecer
+     */
+    public static AnimalType getRandomWeighted() {
+        double r = utils.Rand.getDouble(100.0);
+        double cumulative = 0.0;
+
+        for (AnimalType type : AnimalType.values()) {
+            cumulative += type.getSpawnRate();
+            if (r <= cumulative) {
+                return type;
+            }
+        }
+        return AnimalType.values()[0];
+    }
 }
