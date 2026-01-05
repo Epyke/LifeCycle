@@ -36,7 +36,7 @@ public static void main(){
     gamePanel.startGameThread();
 
   /**World world1 = new World(30);
-  world1.worldGen();s
+  world1.worldGen();sd
   Time worldTime = new Time(world1);
   worldTime.specieExinction(AnimalType.WOLF);*/
 }
