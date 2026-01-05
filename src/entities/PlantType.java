@@ -1,8 +1,12 @@
 package entities;
 
+import utils.Rand;
+
+import java.awt.*;
+
 public enum PlantType implements Edible {
-    PLANT('P', 2, 15, 25, 50, 5, 20, 10.0),
-    CAROT('C', 2, 15, 25, 50, 5, 20, 90.0);
+    PLANT('P', 2, 15, 25, 50, 5, 20, 10.0, Color.GREEN, "res/Plants.png"),
+    CAROT('C', 2, 15, 25, 50, 5, 20, 90.0, null, "res/Carrot.png");
     private char symb;
     private int ageReproduction;
     private int maxAge;
@@ -11,8 +15,10 @@ public enum PlantType implements Edible {
     private int getEnergy;
     private int calories;
     private double SpawnRate;
+    private Color StatTitleColor;
+    private String imgPath;
 
-    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy, int calories, double SpawnRate) {
+    PlantType(char symb, int ageReproduction, int maxAge, int energyReproduction, int maxEnergy, int getEnergy, int calories, double SpawnRate, Color StatTitleColor, String imgPath) {
         this.symb = symb;
         this.ageReproduction = ageReproduction;
         this.maxAge = maxAge;
@@ -21,6 +27,11 @@ public enum PlantType implements Edible {
         this.getEnergy = getEnergy;
         this.calories = calories;
         this.SpawnRate = SpawnRate;
+        this.StatTitleColor = StatTitleColor;
+        this.imgPath = imgPath;
+        if (StatTitleColor == null){
+            this.StatTitleColor = Rand.getAnyRandomColor();
+        }
     }
 
     public char getSymb(){
@@ -34,7 +45,9 @@ public enum PlantType implements Edible {
         return getEnergy;
     }
     public double getSpawnRate(){return SpawnRate;}
-
+    public Color getStatTitleColor(){
+        return StatTitleColor;
+    }
     @Override
     public int getCalories() {
         return calories;
@@ -55,6 +68,10 @@ public enum PlantType implements Edible {
             }
         }
         return PlantType.values()[0];
+    }
+
+    public String getImgPath() {
+        return imgPath;
     }
 }
 

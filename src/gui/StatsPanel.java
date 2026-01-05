@@ -6,6 +6,10 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Map;
 import javax.swing.JPanel;
+
+import entities.AnimalType;
+import entities.PlantType;
+import utils.Rand;
 import world.World;
 import world.stat.GlobalStat;
 import world.stat.SpecieStat;
@@ -30,23 +34,21 @@ public class StatsPanel extends JPanel {
 
         if (world == null || world.getStats() == null) return;
 
-        // Configuração Base
         int x = 10;
         int y = 20;
-        int lineHeight = 18; // Linhas mais compactas
+        int lineHeight = 18;
 
-        // --- TÍTULO E ANO ---
-        g.setFont(new Font("Consolas", Font.BOLD, 23)); // Fonte monospaced fica melhor para números
+        // TÍTULO
+        g.setFont(new Font("Consolas", Font.BOLD, 23));
         g.setColor(Color.ORANGE);
         g.drawString("ANO: " + world.getStats().getCurrYear(), x, y);
         y += 30;
 
-        // Obter os objetos de estatística
         GlobalStat global = world.getStats().getGlobalStats();
-        YearStat year = world.getStats().getCurrYearStat();
+        YearStat year = world.getStats().getCurrYearStat(); // Agora lê do Snapshot correto
         Map<String, SpecieStat> speciesMap = world.getStats().getSpecieStat();
 
-        // --- ESTATÍSTICAS DO ANO ATUAL ---
+        // NESTE ANO
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.CYAN);
         g.drawString("[ NESTE ANO ]", x, y);
@@ -54,11 +56,11 @@ public class StatsPanel extends JPanel {
 
         g.setFont(new Font("Consolas", Font.PLAIN, 15));
         g.setColor(Color.WHITE);
-        g.drawString("Nascimentos : " + year.getBorn_this_turn(), x, y); y += lineHeight;
-        g.drawString("Mortes      : " + year.getDied_this_turn(), x, y); y += lineHeight;
-        g.drawString("Comidos     : " + year.getEaten_this_turn(), x, y); y += lineHeight + 5;
+        g.drawString("Nascimentos : +" + year.getBorn_this_turn(), x, y); y += lineHeight;
+        g.drawString("Mortes      : +" + year.getDied_this_turn(), x, y); y += lineHeight;
+        g.drawString("Comidos     : +" + year.getEaten_this_turn(), x, y); y += lineHeight + 5;
 
-        // --- ESTATÍSTICAS GLOBAIS ---
+        // GLOBAL
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.MAGENTA);
         g.drawString("[ GLOBAL TOTAL ]", x, y);
@@ -71,7 +73,7 @@ public class StatsPanel extends JPanel {
         g.drawString("Mortos Tot  : " + global.getTotal_deaths(), x, y); y += lineHeight;
         g.drawString("Reprod. Tot : " + global.getTotal_born_reproduction(), x, y); y += lineHeight + 10;
 
-        // --- DETALHES POR ESPÉCIE ---
+        // POR ESPÉCIE
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.GREEN);
         g.drawString("[ POR ESPÉCIE ]", x, y);
@@ -81,12 +83,21 @@ public class StatsPanel extends JPanel {
             String name = entry.getKey();
             SpecieStat s = entry.getValue();
 
-            // Título da Espécie
             g.setFont(new Font("Consolas", Font.BOLD, 16));
-            if (name.contains("WOLF")) g.setColor(new Color(255, 100, 100));
-            else if (name.contains("SHEEP")) g.setColor(Color.LIGHT_GRAY);
-            else if (name.contains("PLANT")) g.setColor(new Color(100, 255, 100));
-            else g.setColor(Color.YELLOW);
+
+            Color c = null; // Inicializa a null
+            try {
+                // Tenta achar em AnimalType
+                c = AnimalType.valueOf(name).getStatTitleColor();
+            } catch (IllegalArgumentException e1) {
+                try {
+                    // Tenta achar em PlantType
+                    c = PlantType.valueOf(name).getStatTitleColor();
+                } catch (IllegalArgumentException e2) {
+                    // Se não existir o Enum, c continua null
+                }
+            }
+            g.setColor(c);
 
             g.drawString("--- " + name + " ---", x, y);
             y += lineHeight;
@@ -95,17 +106,14 @@ public class StatsPanel extends JPanel {
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.LIGHT_GRAY);
 
-            // Coluna 1: Vivos e Total
             g.drawString("Vivos: " + s.getCurrent_alive() + " | Tot: " + s.getTotal_created(), x, y);
             y += lineHeight;
 
-            // Coluna 2: Causas de Morte
             if (s.getDeaths() > 0) {
                 g.setColor(new Color(180, 180, 180));
                 g.drawString("Mortes: " + s.getDeaths() + " (Comidos: " + s.getEaten() + ")", x, y);
                 y += lineHeight;
 
-                // Detalhes das mortes (recuado)
                 g.setColor(new Color(150, 150, 150));
                 g.drawString(" Causas:", x, y);
                 y += lineHeight;
@@ -118,7 +126,7 @@ public class StatsPanel extends JPanel {
                 y += lineHeight;
             }
 
-            y += 5; // Espaço entre espécies
+            y += 5;
         }
     }
 }

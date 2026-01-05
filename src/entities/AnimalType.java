@@ -1,15 +1,18 @@
 package entities;
 
 import structures.HabitatType;
+import utils.Rand;
 
+import java.awt.*;
+import java.lang.classfile.instruction.StackInstruction;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    FOX(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10),
-    BUNNY(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90);
+    FOX(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10, Color.ORANGE, "res/Fox2.png", "res/FoxDeath.png"),
+    BUNNY(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90, Color.WHITE, "res/Bunny.png", "res/BunnyDeath.png");
 
     private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 
@@ -49,7 +52,10 @@ public enum AnimalType implements Edible {
 
     private char symb;
 
-    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, char symb, double spawnRate) {
+    private Color StatTitleColor;
+    private String imgPath, deathImgPath;
+
+    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, char symb, double spawnRate, Color StatTitleColor, String imgPath, String deathImgPath) {
         this.Maxhealth = hp;
         this.MaxEnergy = energy;
         this.MaxHunger = food;
@@ -65,6 +71,12 @@ public enum AnimalType implements Edible {
         this.habitat = habitat;
         this.symb = symb;
         this.spawnRate = spawnRate;
+        this.StatTitleColor = StatTitleColor;
+        this.imgPath = imgPath;
+        this.deathImgPath = deathImgPath;
+        if(StatTitleColor == null){
+            this.StatTitleColor = Rand.getAnyRandomColor();
+        }
     }
 
     @Override
@@ -122,5 +134,17 @@ public enum AnimalType implements Edible {
             }
         }
         return AnimalType.values()[0];
+    }
+
+    public String getDeadImgPath() {
+        return deathImgPath;
+    }
+
+    public Color getStatTitleColor(){
+        return StatTitleColor;
+    }
+
+    public String getImgPath() {
+        return imgPath;
     }
 }

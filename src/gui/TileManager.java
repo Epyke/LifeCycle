@@ -2,9 +2,11 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 
 import obstacles.Obstacle;
@@ -19,123 +21,94 @@ public class TileManager {
 
     GamePanel gp;
     public Tile[] tiles;
-
+    private HashMap<Object, BufferedImage> entityImages;
+    private HashMap<Object, BufferedImage> deadEntityImages;
     public TileManager(GamePanel gp) {
         this.gp = gp;
         tiles = new Tile[10];
+        entityImages = new HashMap<>();
+        deadEntityImages = new HashMap<>();
         getTileImage();
     }
 
     public void getTileImage() {
         try {
-            // --- CARREGAR IMAGENS ---
-            // Certifica-te que os nomes coincidem exatamente com os ficheiros na pasta res
+            // --- CARREGAR TERRENO (Estático) ---
             File fGrass = new File("res/Grass.png");
-            File fRock = new File("res/Rock.png"); // Imagem 2x2 (128px)
-            File fPlant = new File("res/Plants.png");
+            File fRock = new File("res/Rock.png");
             File fWater = new File("res/Water.png");
-            File fFox = new File("res/Fox.png");     // Lobo
-            File fBunny = new File("res/Bunny.png"); // Ovelha
-            File fCarrot = new File("res/Carrot.png");
 
-            // --- INICIALIZAR TILES ---
+            tiles[0] = new Tile(); // Vazio
 
-            // TILE 0: Vazio/Default
-            tiles[0] = new Tile();
-            tiles[0].collision = true;
-
-            // TILE 1: RELVA
             tiles[1] = new Tile();
             if (fGrass.exists()) tiles[1].image = ImageIO.read(fGrass);
-            else System.out.println("Erro: Grass.png não encontrado.");
 
-            // TILE 2: ROCHA (Multitile)
             tiles[2] = new Tile();
             if (fRock.exists()) tiles[2].image = ImageIO.read(fRock);
-            else System.out.println("Erro: Rock.png não encontrado.");
-            tiles[2].collision = true;
 
-            // TILE 3: PLANTA (Arbusto/Berry)
-            tiles[3] = new Tile();
-            if (fPlant.exists()) tiles[3].image = ImageIO.read(fPlant);
-            else System.out.println("Aviso: Plants.png não encontrada.");
-
-            // TILE 4: ÁGUA
-            tiles[4] = new Tile();
+            tiles[4] = new Tile(); // Usamos o 4 para água
             if (fWater.exists()) tiles[4].image = ImageIO.read(fWater);
-            else System.out.println("Aviso: Water.png não encontrada.");
-            tiles[4].collision = true;
 
-            // TILE 5: LOBO (Fox sprite)
-            tiles[5] = new Tile();
-            if (fFox.exists()) tiles[5].image = ImageIO.read(fFox);
-            else System.out.println("Aviso: Fox.png não encontrada.");
+            // --- CARREGAR IMAGENS DINÂMICAS (Dos Enums) ---
 
-            // TILE 6: OVELHA (Bunny sprite)
-            tiles[6] = new Tile();
-            if (fBunny.exists()) tiles[6].image = ImageIO.read(fBunny);
-            else System.out.println("Aviso: Bunny.png não encontrada.");
+            // 1. Animais
+            for (AnimalType type : AnimalType.values()) {
+                // 1. Imagem Vivo
+                if (type.getImgPath() != null) {
+                    File f = new File(type.getImgPath());
+                    if (f.exists()) entityImages.put(type, ImageIO.read(f));
+                }
 
-            // TILE 7: CENOURA
-            tiles[7] = new Tile();
-            if (fCarrot.exists()) tiles[7].image = ImageIO.read(fCarrot);
-            else System.out.println("Aviso: Carrot.png não encontrada.");
+                // 2. Imagem Morto
+                if (type.getDeadImgPath() != null) {
+                    File f = new File(type.getDeadImgPath());
+                    if (f.exists()) deadEntityImages.put(type, ImageIO.read(f));
+                }
+            }
+
+            // 2. Plantas
+            for (PlantType type : PlantType.values()) {
+                String path = type.getImgPath();
+                if (path != null) {
+                    File f = new File(path);
+                    if (f.exists()) {
+                        entityImages.put(type, ImageIO.read(f));
+                    } else {
+                        System.out.println("Imagem não encontrada para " + type + ": " + path);
+                    }
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Auxiliares mantêm-se iguais
-    private boolean isRock(int x, int y, ArrayList<ArrayList<Cell>> grid) {
-        if (x < 0 || y < 0 || y >= grid.size() || x >= grid.get(y).size()) return false;
-        return grid.get(y).get(x).getType() == CellType.ROCK;
-    }
-
-    private boolean isBigRockTopLeft(int x, int y, ArrayList<ArrayList<Cell>> grid) {
-        return isRock(x, y, grid) && isRock(x + 1, y, grid) && isRock(x, y + 1, grid) && isRock(x + 1, y + 1, grid);
-    }
-
     public void draw(Graphics2D g2) {
         var grid = gp.world.getGrid();
         var entitiesMap = gp.world.getEntities();
-        ArrayList<Obstacle> obstacles = gp.world.getObstacles();
         int tileSize = gp.tileSize;
+        ArrayList<Obstacle> obstacles = gp.world.getObstacles();
 
         if (grid == null) return;
 
-        // --- CÁLCULO PARA CENTRAR AS ENTIDADES ---
-        // Define o tamanho da entidade como 80% do tamanho do quadrado do chão
         int entitySize = (int)(tileSize * 0.8);
-        // Calcula a margem necessária para centrar a entidade no quadrado
         int offset = (tileSize - entitySize) / 2;
 
         for (int y = 0; y < grid.size(); y++) {
             for (int x = 0; x < grid.get(y).size(); x++) {
-
                 Cell cell = grid.get(y).get(x);
                 int worldX = x * tileSize;
                 int worldY = y * tileSize;
 
-                // ---------------------------
-                // CAMADA 1: TERRENO
-                // ---------------------------
 
                 if (cell.getType() == CellType.WATER) {
-                    if (tiles[4].image != null) {
-                        g2.drawImage(tiles[4].image, worldX, worldY, tileSize, tileSize, null);
-                    } else {
-                        g2.setColor(Color.BLUE); // Fallback se não houver imagem
-                        g2.fillRect(worldX, worldY, tileSize, tileSize);
-                    }
+                    if (tiles[4].image != null) g2.drawImage(tiles[4].image, worldX, worldY, tileSize, tileSize, null);
+                    else { g2.setColor(Color.BLUE); g2.fillRect(worldX, worldY, tileSize, tileSize); }
                 }
                 else if (cell.getType() == CellType.GRASS) {
-                    if (tiles[1].image != null) {
-                        g2.drawImage(tiles[1].image, worldX, worldY, tileSize, tileSize, null);
-                    } else {
-                        g2.setColor(new Color(34, 139, 34)); // Fallback Verde
-                        g2.fillRect(worldX, worldY, tileSize, tileSize);
-                    }
+                    if (tiles[1].image != null) g2.drawImage(tiles[1].image, worldX, worldY, tileSize, tileSize, null);
+                    else { g2.setColor(new Color(34, 139, 34)); g2.fillRect(worldX, worldY, tileSize, tileSize); }
                 }
                 else if (cell.getType() == CellType.ROCK) {
                     for(Obstacle o: obstacles) {
@@ -148,59 +121,45 @@ public class TileManager {
                     }
                 }
 
-                // ---------------------------
-                // CAMADA 2: ENTIDADES
-                // ---------------------------
-                // Usamos (worldX + offset) para garantir que ficam no meio
-
-                if (cell.getCurrentOcupant() == LayerType.ANIMAL) {
+                if (cell.getCurrentOcupant() != LayerType.NONE) {
                     Entity e = entitiesMap.get(cell.getCoord());
+
                     if (e instanceof Animal) {
                         Animal a = (Animal) e;
+                        AnimalType type = a.getType();
 
-                        // LOBO (Usa a sprite da Raposa - Tile 5)
-                        if (a.getType() == AnimalType.FOX) {
-                            if (tiles[5].image != null) {
-                                g2.drawImage(tiles[5].image, worldX + offset, worldY + offset, entitySize / 2, entitySize / 2, null);
-                            } else {
-                                g2.setColor(Color.DARK_GRAY);
-                                g2.fillOval(worldX + offset, worldY + offset, entitySize, entitySize);
-                            }
+                        // Lógica de seleção de imagem
+                        BufferedImage imgToDraw = null;
+
+                        if (a.getIsDead()) {
+                            // Se está morto, tenta buscar a imagem de morto
+                            imgToDraw = deadEntityImages.get(type);
+                            // Fallback: Se não houver imagem de morto, usa a de vivo mas podes aplicar um filtro ou cor
+                        } else {
+                            // Se está vivo
+                            imgToDraw = entityImages.get(type);
                         }
-                        // OVELHA (Usa a sprite do Coelho - Tile 6)
-                        else if (a.getType() == AnimalType.BUNNY) {
-                            if (tiles[6].image != null) {
-                                g2.drawImage(tiles[6].image, worldX + offset, worldY + offset, entitySize / 2, entitySize / 2, null);
-                            } else {
-                                g2.setColor(Color.WHITE);
-                                g2.fillOval(worldX + offset, worldY + offset, entitySize, entitySize);
-                            }
+
+                        // DESENHAR
+                        if (imgToDraw != null) {
+                            g2.drawImage(imgToDraw, worldX + offset, worldY + offset, entitySize, entitySize, null);
+                        } else {
+                            // FALLBACK (Sem Imagem)
+                            if (a.getIsDead()) g2.setColor(Color.BLACK); // Morto fica preto
+                            else g2.setColor(type.getStatTitleColor()); // Vivo fica com a cor do tipo
+                            g2.fillOval(worldX + offset, worldY + offset, entitySize, entitySize);
                         }
                     }
-                }
-                else if (cell.getCurrentOcupant() == LayerType.PLANT) {
-                    Entity e = entitiesMap.get(cell.getCoord());
-                    if(e instanceof Plant){
+                    else if (e instanceof Plant) {
                         Plant p = (Plant) e;
+                        PlantType type = p.getType();
 
-                        // ARBUSTO (Tile 3)
-                        if(p.getType() == PlantType.PLANT){
-                            if(tiles[3].image != null) {
-                                g2.drawImage(tiles[3].image, worldX + offset, worldY + offset, entitySize, entitySize, null);
-                            } else {
-                                g2.setColor(Color.GREEN);
-                                g2.fillRect(worldX + offset, worldY + offset, entitySize, entitySize);
-                            }
-                        }
-                        // CENOURA (Tile 7) - Nota: Verifica se no teu Enum é CAROT ou CARROT
-                        // Tenta usar CARROT se tiveres erro no CAROT
-                        else if (p.getType().toString().equals("CAROT") || p.getType().toString().equals("CARROT")){
-                            if(tiles[7].image != null) {
-                                g2.drawImage(tiles[7].image, worldX + offset, worldY + offset, entitySize, entitySize, null);
-                            } else {
-                                g2.setColor(Color.ORANGE);
-                                g2.fillRect(worldX + offset, worldY + offset, entitySize, entitySize);
-                            }
+                        if (entityImages.containsKey(type)) {
+                            g2.drawImage(entityImages.get(type), worldX + offset, worldY + offset, entitySize, entitySize, null);
+                        } else {
+                            // FALLBACK: QUADRADO com cor aleatória definida
+                            g2.setColor(type.getStatTitleColor());
+                            g2.fillRect(worldX + offset, worldY + offset, entitySize, entitySize);
                         }
                     }
                 }

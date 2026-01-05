@@ -8,19 +8,23 @@ import java.util.Map;
 public class StatsManager {
     private int currYear;
     private GlobalStat globalStats;
-    private YearStat currYearStat;
     private HashMap<String, SpecieStat> speciesStatsMap;
+
+    private YearStat recordingStat;
+    private YearStat displayStat;
 
     public StatsManager() {
         this.currYear = 0;
         this.globalStats = new GlobalStat();
-        this.currYearStat = new YearStat();
+        this.recordingStat = new YearStat();
+        this.displayStat = new YearStat();
         this.speciesStatsMap = new HashMap<>();
     }
 
     public void incrementYear() {
         this.currYear++;
-        this.currYearStat.reset();
+        this.displayStat = this.recordingStat;
+        this.recordingStat = new YearStat();
     }
 
     private SpecieStat getSpecies(String speciesName) {
@@ -39,7 +43,7 @@ public class StatsManager {
         globalStats.increment_total_entities_ever_created();
         globalStats.increment_current_entities_alive();
 
-        currYearStat.increment_born_this_turn();
+        recordingStat.increment_born_this_turn();
 
         if (isReproduction) {
             globalStats.increment_total_born_reproduction();
@@ -55,7 +59,7 @@ public class StatsManager {
 
         globalStats.increment_total_deaths();
         globalStats.decrease_current_entities_alive();
-        currYearStat.increment_died_this_turn();
+        recordingStat.increment_died_this_turn();
 
         // 2. Specific Cause counters
         switch (cause) {
@@ -74,15 +78,17 @@ public class StatsManager {
             case "eaten":
                 s.increment_total_eaten();
                 globalStats.increment_total_eaten();
-                currYearStat.increment_eaten_this_turn();
+                recordingStat.increment_eaten_this_turn();
                 break;
         }
     }
 
     public void registerEaten(String speciesName) {
-        globalStats.increment_total_eaten();
-        currYearStat.increment_eaten_this_turn();
         registerDeath(speciesName, "eaten");
+    }
+
+    public YearStat getCurrYearStat() {
+        return displayStat;
     }
 
     public HashMap<String, SpecieStat> getSpecieStat(){
@@ -98,9 +104,9 @@ public class StatsManager {
         sb.append("       STATISTICS - YEAR ").append(currYear).append("\n");
         sb.append(border);
 
-        sb.append(String.format("  %-20s : %d\n", "Born", currYearStat.getBorn_this_turn()));
-        sb.append(String.format("  %-20s : %d\n", "Died", currYearStat.getDied_this_turn()));
-        sb.append(String.format("  %-20s : %d\n", "Eaten", currYearStat.getEaten_this_turn()));
+        sb.append(String.format("  %-20s : %d\n", "Born", displayStat.getBorn_this_turn()));
+        sb.append(String.format("  %-20s : %d\n", "Died", displayStat.getDied_this_turn()));
+        sb.append(String.format("  %-20s : %d\n", "Eaten", displayStat.getEaten_this_turn()));
         sb.append(subBorder);
         return sb.toString();
     }
@@ -147,10 +153,6 @@ public class StatsManager {
         sb.append(border);
 
         return sb.toString();
-    }
-
-    public YearStat getCurrYearStat(){
-        return currYearStat;
     }
 
     public GlobalStat getGlobalStats(){

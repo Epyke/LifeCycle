@@ -1,4 +1,5 @@
 import entities.AnimalType;
+import gui.ControlPanel;
 import gui.StatsPanel;
 import obstacles.Rock;
 import world.Time;
@@ -14,22 +15,23 @@ public static void main(){
     window.setResizable(false);
     window.setTitle("LifeCycle Simulation");
 
-    // Usa BorderLayout para permitir painéis laterais
     window.setLayout(new BorderLayout());
 
     GamePanel gamePanel = new GamePanel();
 
-    // Cria o StatsPanel com a mesma altura do jogo
+    // Stats Panel (Direita)
     StatsPanel statsPanel = new StatsPanel(gamePanel.world, gamePanel.screenHeight);
-
-    // Liga os painéis (para o GamePanel poder atualizar o StatsPanel)
     gamePanel.statsPanel = statsPanel;
 
-    // Adiciona ao ecrã
-    window.add(gamePanel, BorderLayout.CENTER); // Jogo no meio
-    window.add(statsPanel, BorderLayout.EAST);  // Stats à direita
+    // Control Panel (Esquerda) - NOVO
+    ControlPanel controlPanel = new ControlPanel(gamePanel, gamePanel.screenHeight);
 
-    window.pack(); // Ajusta o tamanho da janela para caber tudo
+    // Montar Layout
+    window.add(controlPanel, BorderLayout.WEST);
+    window.add(gamePanel, BorderLayout.CENTER);
+    window.add(statsPanel, BorderLayout.EAST);
+
+    window.pack();
     window.setLocationRelativeTo(null);
     window.setVisible(true);
 

@@ -6,39 +6,47 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JPanel;
 import world.World;
+import world.stat.SpecieStat;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // Configurações Gráficas
-    final int originalTileSize = 32;
-    final int scale = 2;
-    public final int tileSize = originalTileSize * scale; // 64x64 pixels
+    // --- CONFIGURAÇÕES DE ECRÃ ---
+    final int originalTileSize = 16;
+    final int scale = 2; // Aumentei o scale para veres melhor os ícones de 32x32
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 30; // 30 colunas
+    public final int maxScreenRow = 30; // 30 linhas
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
 
-    // Configurações do Mundo
-    // O teu World(size) define o tamanho da grid. Vamos sincronizar isso.
-    public final int worldSize = 15; // Exemplo: mapa 15x15
-    public final int screenWidth = tileSize * worldSize;
-    public final int screenHeight = tileSize * worldSize;
-    public StatsPanel statsPanel;
-
-    // Integração com o teu Projeto
-    public World world;
+    // --- SISTEMA ---
+    int FPS = 10; // Reduzi para 10 para dar tempo de ver as coisas a acontecer
     Thread gameThread;
+    public World world;
     TileManager tileM;
+    public StatsPanel statsPanel; // Referência para atualizar stats
 
-    // Controlo de FPS e Simulação
-    int FPS = 60;
-    int simulationSpeed = 60; // A cada 60 frames (1 seg), o mundo atualiza (passa um ano)
-    int counter = 0;
+    // --- VARIÁVEIS DE CONTROLO DE TEMPO (Novo!) ---
+    private boolean isRunning = false; // Começa pausado
+    private SimulationMode mode = SimulationMode.CONTINUOUS;
+    private int targetYear = 0;
+    private String targetSpecies = "";
+
+    // Enum para os modos de simulação
+    public enum SimulationMode {
+        CONTINUOUS,
+        YEAR_LIMIT,
+        EXTINCTION
+    }
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
-        // INICIALIZA O TEU MUNDO AQUI
-        world = new World(worldSize);
-        world.worldGen(); // Gera lagos, pedras e entidades iniciais
+        // Inicializa o mundo
+        world = new World(maxScreenCol);
+        world.worldGen();
 
         tileM = new TileManager(this);
     }
@@ -46,6 +54,33 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    // --- MÉTODOS DE CONTROLO (Chamados pelo ControlPanel) ---
+
+    public void startContinuous() {
+        this.mode = SimulationMode.CONTINUOUS;
+        this.isRunning = true;
+    }
+
+    public void startYears(int yearsToRun) {
+        this.mode = SimulationMode.YEAR_LIMIT;
+        this.targetYear = world.getStats().getCurrYear() + yearsToRun;
+        this.isRunning = true;
+    }
+
+    public void startUntilExtinction(String speciesName) {
+        this.mode = SimulationMode.EXTINCTION;
+        this.targetSpecies = speciesName;
+        this.isRunning = true;
+    }
+
+    public void pauseSimulation() {
+        this.isRunning = false;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     @Override
@@ -61,10 +96,15 @@ public class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                update();
-                repaint();
+                // SÓ ATUALIZA O MUNDO SE ESTIVER "RUNNING"
+                if (isRunning) {
+                    update();
+                    checkStopConditions(); // Verifica se deve parar automaticamente
+                }
 
-                // 2. ADICIONA ESTA LINHA PARA ATUALIZAR O PAINEL LATERAL
+                repaint(); // Desenha sempre (mesmo pausado, para vermos o mapa)
+
+                // Atualiza o painel lateral
                 if (statsPanel != null) {
                     statsPanel.repaint();
                 }
@@ -74,23 +114,32 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void update() {
-        // Logica para abrandar a simulação para ser visível
-        counter++;
-        if(counter >= simulationSpeed) {
-            System.out.println("Updating World Year..."); // Debug na consola
-            world.updateEntities();
-            counter = 0;
+    private void checkStopConditions() {
+        if (mode == SimulationMode.YEAR_LIMIT) {
+            if (world.getStats().getCurrYear() >= targetYear) {
+                isRunning = false;
+                System.out.println("Simulação parada: Limite de anos atingido.");
+            }
         }
+        else if (mode == SimulationMode.EXTINCTION) {
+            SpecieStat s = world.getStats().getSpecieStat().get(targetSpecies);
+            // Se a espécie não existe ou tem 0 vivos, paramos
+            if (s == null || s.getCurrent_alive() <= 0) {
+                isRunning = false;
+                System.out.println("Simulação parada: " + targetSpecies + " extinta.");
+            }
+        }
+    }
+
+    public void update() {
+        world.updateEntities();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-
-        tileM.draw(g2); // Desenha o estado atual do World
-
+        tileM.draw(g2);
         g2.dispose();
     }
 }

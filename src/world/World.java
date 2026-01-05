@@ -283,7 +283,7 @@ public class World {
             Entity e = it.next().getValue();
 
             boolean isRottenAnimal = (e instanceof Animal && e.getDecomposeTimer() >= 1);
-            boolean isRottenPlant = (e instanceof Plant && e.getDecomposeTimer() >= 2);
+            boolean isRottenPlant = (e instanceof Plant && e.getDecomposeTimer() >= 1);
 
             if (isRottenAnimal || isRottenPlant) {
                 CellUtils.findCell(this, e.getCoords()).setCurrentOcupant(LayerType.NONE);

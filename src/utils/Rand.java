@@ -1,5 +1,6 @@
 package utils;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Random;
 import java.util.List;
@@ -93,5 +94,10 @@ public class Rand {
         }
 
         return rng.nextInt(100) < percentage;
+    }
+
+    public static Color getAnyRandomColor() {
+        Random rand = new Random();
+        return new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
     }
 }
