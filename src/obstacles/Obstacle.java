@@ -4,6 +4,8 @@ package obstacles;
 import world.Cell;
 import world.Coord;
 import world.World;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

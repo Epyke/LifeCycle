@@ -11,6 +11,7 @@ import world.World;
  */
 public class Rock extends Obstacle{
     private static final int[][] disp = {{0,1},{1,0},{1,1}};
+    private Coord StartCoord;
     public Rock(World world){
         super(world);
     }
@@ -65,6 +66,7 @@ public class Rock extends Obstacle{
      */
     public void genObstacle(){
         Coord newCoords = getRandomCoords();
+        StartCoord = new Coord(newCoords.getX(), newCoords.getY());
         Cell selectedCell = super.getWorld().getGrid().get(newCoords.getY()).get(newCoords.getX());
         selectedCell.setCellType(CellType.ROCK);
         super.getMap().put(newCoords, selectedCell);
@@ -77,5 +79,9 @@ public class Rock extends Obstacle{
             selectedCell2.setCellType(CellType.ROCK);
             super.getMap().put(selectedCell2.getCoord(), selectedCell2);
         }
+    }
+
+    public Coord getStartCoord(){
+        return StartCoord;
     }
 }

@@ -3,12 +3,17 @@ package gui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
+
+import obstacles.Obstacle;
+import obstacles.Rock;
 import world.Cell;
 import world.CellType;
 import world.LayerType;
 import entities.*;
+import world.stat.GlobalStat;
 
 public class TileManager {
 
@@ -94,6 +99,7 @@ public class TileManager {
     public void draw(Graphics2D g2) {
         var grid = gp.world.getGrid();
         var entitiesMap = gp.world.getEntities();
+        ArrayList<Obstacle> obstacles = gp.world.getObstacles();
         int tileSize = gp.tileSize;
 
         if (grid == null) return;
@@ -132,26 +138,13 @@ public class TileManager {
                     }
                 }
                 else if (cell.getType() == CellType.ROCK) {
-                    // Lógica para desenhar a imagem grande (2x2)
-                    if (isBigRockTopLeft(x, y, grid)) {
-                        if (tiles[2].image != null) {
-                            // Desenha a imagem ocupando 2 tiles
-                            g2.drawImage(tiles[2].image, worldX, worldY, tileSize * 2, tileSize * 2, null);
-                        } else {
-                            g2.setColor(Color.GRAY);
-                            g2.fillRect(worldX, worldY, tileSize, tileSize);
+                    for(Obstacle o: obstacles) {
+                        if(o instanceof Rock) {
+                            Rock Tryrock = (Rock) o;
+                            if(Tryrock.getStartCoord() .getX() == cell.getCoord().getX() &&  Tryrock.getStartCoord().getY() == cell.getCoord().getY()) {
+                                g2.drawImage(tiles[2].image, worldX, worldY, tileSize * 2, tileSize * 2, null);
+                            }
                         }
-                    }
-                    // Se for vizinho de uma pedra principal, não desenha nada (para não tapar a imagem grande)
-                    else if (isBigRockTopLeft(x - 1, y, grid) ||
-                            isBigRockTopLeft(x, y - 1, grid) ||
-                            isBigRockTopLeft(x - 1, y - 1, grid)) {
-                        // Deixar vazio
-                    }
-                    // Pedra isolada (fallback)
-                    else {
-                        g2.setColor(Color.GRAY);
-                        g2.fillRect(worldX, worldY, tileSize, tileSize);
                     }
                 }
 

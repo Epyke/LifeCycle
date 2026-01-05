@@ -361,6 +361,10 @@ public class World {
         return res;
     }
 
+    public ArrayList<Obstacle> getObstacles(){
+        return terrain;
+    }
+
     public ArrayList<ArrayList<Cell>> getGrid(){
         return grid;
     }

@@ -36,7 +36,7 @@ public class StatsPanel extends JPanel {
         int lineHeight = 18; // Linhas mais compactas
 
         // --- TÍTULO E ANO ---
-        g.setFont(new Font("Consolas", Font.BOLD, 20)); // Fonte monospaced fica melhor para números
+        g.setFont(new Font("Consolas", Font.BOLD, 23)); // Fonte monospaced fica melhor para números
         g.setColor(Color.ORANGE);
         g.drawString("ANO: " + world.getStats().getCurrYear(), x, y);
         y += 30;
@@ -47,24 +47,24 @@ public class StatsPanel extends JPanel {
         Map<String, SpecieStat> speciesMap = world.getStats().getSpecieStat();
 
         // --- ESTATÍSTICAS DO ANO ATUAL ---
-        g.setFont(new Font("Consolas", Font.BOLD, 14));
+        g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.CYAN);
         g.drawString("[ NESTE ANO ]", x, y);
         y += lineHeight;
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setFont(new Font("Consolas", Font.PLAIN, 15));
         g.setColor(Color.WHITE);
         g.drawString("Nascimentos : " + year.getBorn_this_turn(), x, y); y += lineHeight;
         g.drawString("Mortes      : " + year.getDied_this_turn(), x, y); y += lineHeight;
         g.drawString("Comidos     : " + year.getEaten_this_turn(), x, y); y += lineHeight + 5;
 
         // --- ESTATÍSTICAS GLOBAIS ---
-        g.setFont(new Font("Consolas", Font.BOLD, 14));
+        g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.MAGENTA);
         g.drawString("[ GLOBAL TOTAL ]", x, y);
         y += lineHeight;
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setFont(new Font("Consolas", Font.PLAIN, 15));
         g.setColor(Color.WHITE);
         g.drawString("Vivos Agora : " + global.getCurrent_entities_alive(), x, y); y += lineHeight;
         g.drawString("Criados Tot : " + global.getTotal_entities_ever_created(), x, y); y += lineHeight;
@@ -72,7 +72,7 @@ public class StatsPanel extends JPanel {
         g.drawString("Reprod. Tot : " + global.getTotal_born_reproduction(), x, y); y += lineHeight + 10;
 
         // --- DETALHES POR ESPÉCIE ---
-        g.setFont(new Font("Consolas", Font.BOLD, 14));
+        g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.GREEN);
         g.drawString("[ POR ESPÉCIE ]", x, y);
         y += lineHeight + 5;
@@ -82,7 +82,7 @@ public class StatsPanel extends JPanel {
             SpecieStat s = entry.getValue();
 
             // Título da Espécie
-            g.setFont(new Font("Consolas", Font.BOLD, 13));
+            g.setFont(new Font("Consolas", Font.BOLD, 16));
             if (name.contains("WOLF")) g.setColor(new Color(255, 100, 100));
             else if (name.contains("SHEEP")) g.setColor(Color.LIGHT_GRAY);
             else if (name.contains("PLANT")) g.setColor(new Color(100, 255, 100));
@@ -92,7 +92,7 @@ public class StatsPanel extends JPanel {
             y += lineHeight;
 
             // Dados da Espécie
-            g.setFont(new Font("Consolas", Font.PLAIN, 11));
+            g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.LIGHT_GRAY);
 
             // Coluna 1: Vivos e Total
