@@ -1,8 +1,8 @@
 package entities;
 
 public enum PlantType implements Edible {
-    PLANT('P', 2, 15, 25, 50, 5, 20, 100.0);
-
+    PLANT('P', 2, 15, 25, 50, 5, 20, 10.0),
+    CAROT('C', 2, 15, 25, 50, 5, 20, 90.0);
     private char symb;
     private int ageReproduction;
     private int maxAge;

@@ -55,7 +55,7 @@ public class StatsManager {
 
         globalStats.increment_total_deaths();
         globalStats.decrease_current_entities_alive();
-        currYearStat.increment_born_this_turn();
+        currYearStat.increment_died_this_turn();
 
         // 2. Specific Cause counters
         switch (cause) {
@@ -147,5 +147,17 @@ public class StatsManager {
         sb.append(border);
 
         return sb.toString();
+    }
+
+    public YearStat getCurrYearStat(){
+        return currYearStat;
+    }
+
+    public GlobalStat getGlobalStats(){
+        return globalStats;
+    }
+
+    public int getCurrYear(){
+        return currYear;
     }
 }

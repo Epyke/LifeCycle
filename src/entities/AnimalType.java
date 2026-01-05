@@ -8,16 +8,16 @@ import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    WOLF(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10),
-    SHEEP(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90);
+    FOX(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10),
+    BUNNY(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90);
 
     private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 
     private static final HashMap<Edible, HashSet<AnimalType>> preyMap = new HashMap<>();
 
     static {
-        huntMap.put(WOLF, new HashSet<>(Set.of(SHEEP)));
-        huntMap.put(SHEEP, new HashSet<>(Set.of(PlantType.PLANT)));
+        huntMap.put(FOX, new HashSet<>(Set.of(BUNNY)));
+        huntMap.put(BUNNY, new HashSet<>(Set.of(PlantType.CAROT)));
 
         //Geracao do HashMap inverso ao huntMap, key: presa, values: cacadores
         for(AnimalType hunter : huntMap.keySet()) {

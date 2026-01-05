@@ -2,6 +2,7 @@ package world;
 
 import entities.*;
 import obstacles.Lake;
+import obstacles.Obstacle;
 import obstacles.Rock;
 import structures.HabitatType;
 import utils.CellUtils;
@@ -26,12 +27,14 @@ public class World {
      * Um unico HashMap para simplificar a atualização dos organismos
      */
     private HashMap<Coord, Entity> entities;
+    private ArrayList<Obstacle> terrain;
 
     public World(int size){
         grid = new ArrayList<>();
         this.size = size;
         entities = new HashMap<>();
         statsManager = new StatsManager();
+        terrain = new ArrayList<>();
         if (!(size > 0)){
             throw new IllegalArgumentException("Size needs to be > 0");
         }
@@ -48,7 +51,9 @@ public class World {
         int rdmNumb = Rand.getRandomNmb(1,limit);
         for(int i = 0; i < rdmNumb; i++){
             int rdmSize = Rand.getRandomNmb(sizeMin, sizeMax);
-            new Lake(this, rdmSize).genObstacle();
+            Lake newLake = new Lake(this, rdmSize);
+            newLake.genObstacle();
+            terrain.add(newLake);
         }
     }
 
@@ -59,7 +64,9 @@ public class World {
     public void genRandomRocks(int limit){
         int rdmNumb = Rand.getRandomNmb(1,limit);
         for(int i = 0;i < rdmNumb; i++){
-            new Rock(this).genObstacle();
+           Rock newRock = new Rock(this);
+           newRock.genObstacle();
+           terrain.add(newRock);
         }
     }
 
