@@ -126,7 +126,7 @@ public enum AnimalType implements Edible {
     }
 
     /**
-     * Obter uma especie de animal, consoante a sua percentagem de aparição
+     * Obter uma especie de animal, consoante a sua percentagem de apariçãos
      * @return O tipo de especie que vai aparecer
      */
     public static AnimalType getRandomWeighted() {
