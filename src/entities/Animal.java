@@ -82,7 +82,6 @@ public class Animal extends Entity implements Edible{
         Coord bestTarget = null;
         int minDistance = Integer.MAX_VALUE;
 
-
         for (Entity e : w.getEntities().values()) {
             if (!(e instanceof Animal)) continue;
             Animal target = (Animal) e;
@@ -117,21 +116,21 @@ public class Animal extends Entity implements Edible{
         int stepY = Integer.compare(dy, 0);
 
         if (stepX != 0) {
-            if (tryMove(super.getCoords().getX() + stepX, super.getCoords().getY())) return true;
+            if (tryMove(CellUtils.findCell(super.getWorld(),super.getCoords().getX() + stepX, super.getCoords().getY()).getCoord())) return true;
         }
 
         if (stepY != 0) {
-            if (tryMove(super.getCoords().getX(), super.getCoords().getY() + stepY)) return true;
+            if (tryMove(CellUtils.findCell(super.getWorld(),super.getCoords().getX(), super.getCoords().getY() + stepY).getCoord())) return true;
         }
 
         return false;
     }
 
-    private boolean tryMove(int x, int y) {
+    private boolean tryMove(Coord coords) {
         World w = super.getWorld();
-        if (!Adjacent.verifyCoords(w, x, y)) return false;
+        if (!Adjacent.verifyCoords(w, coords.getX(), coords.getY())) return false;
 
-        Cell targetCell = CellUtils.findCell(w, x, y);
+        Cell targetCell = CellUtils.findCell(w, coords.getX(), coords.getY());
 
         boolean isEmpty = targetCell.getCurrentOcupant() == LayerType.NONE;
         boolean isPlant = targetCell.getCurrentOcupant() == LayerType.PLANT;
@@ -139,14 +138,14 @@ public class Animal extends Entity implements Edible{
         if ((isEmpty || isPlant) && targetCell.getType() == CellType.GRASS) {
 
             if (isPlant) {
-                Entity plant = w.getEntities().get(new Coord(x, y));
+                Entity plant = w.getEntities().get(coords);
                 if (plant != null) {
                     plant.die("trampled");
-                    w.removeEntity(new Coord(x, y));
+                    w.removeEntity(coords);
                 }
             }
 
-            w.moveEntity(super.getCoords(), new Coord(x, y));
+            w.moveEntity(super.getCoords(), coords);
             currentEnergy -= type.getEnergyMovement();
             return true;
         }
@@ -164,14 +163,16 @@ public class Animal extends Entity implements Edible{
         }
 
         Cell actualCell = CellUtils.findCell(super.getWorld(), super.getCoords());
-        ArrayList<Cell> adjs = Adjacent.getAdjacents(super.getWorld(), actualCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
+        ArrayList<LayerType> permittedLayers = new ArrayList<>();
+        permittedLayers.add(LayerType.PLANT);
+        permittedLayers.add(LayerType.NONE);
+        ArrayList<Cell> adjs = Adjacent.getAdjacents(super.getWorld(), actualCell, CellType.GRASS, permittedLayers);
         if(adjs.isEmpty()){
             return false;
         }
         int randIndex = Rand.getRandomNmb(adjs.size() - 1);
-        super.getWorld().moveEntity(super.getCoords(), adjs.get(randIndex).getCoord());
-        currentEnergy -= type.getEnergyMovement();
-        return true;
+        Cell target = adjs.get(randIndex);
+        return tryMove(target.getCoord());
     }
 
     public void updateStats() {

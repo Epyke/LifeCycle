@@ -4,6 +4,7 @@ import entities.AnimalType;
 import structures.HabitatType;
 import world.*;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -53,6 +54,27 @@ public class Adjacent {
         }
         return frontier;
     }
+
+    public static ArrayList<Cell> getAdjacents(World w, Cell c, CellType type, ArrayList<LayerType> layers){
+        ArrayList<Cell> frontier = new ArrayList<>();
+        Coord currCoordsCell = c.getCoord();
+        int x = currCoordsCell.getX();
+        int y = currCoordsCell.getY();
+
+        for(int[] a: directions){
+            int nx = x + a[0];
+            int ny = y + a[1];
+
+            if(verifyCoords(w, nx, ny) && w.getGrid().get(ny).get(nx).getType() == type){
+                if(layers.contains(w.getGrid().get(ny).get(nx).getCurrentOcupant())){
+                    frontier.add(w.getGrid().get(ny).get(nx));
+                }
+            }
+        }
+        return frontier;
+    }
+
+
 
     public static ArrayList<Cell> getOccupiedAdjacents(World w, Cell c){
         ArrayList<Cell> frontier = new ArrayList<>();

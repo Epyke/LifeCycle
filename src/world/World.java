@@ -90,7 +90,7 @@ public class World {
 
         genRandomRocks(5);
         genRandomLakes(3, 10, 15);
-        genEntities(20, 30, 50);
+        genEntities(30, 20, 50);
     }
 
     /**

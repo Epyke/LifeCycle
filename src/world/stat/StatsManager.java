@@ -76,6 +76,7 @@ public class StatsManager {
                 break;
             case "trampled":
                 s.increment_trampled();
+                break;
             case "eaten":
                 s.increment_total_eaten();
                 globalStats.increment_total_eaten();
