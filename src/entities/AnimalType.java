@@ -11,8 +11,8 @@ import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    FOX(150, 100,125, 100, 20, 1, 1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10, Color.ORANGE, "res/Fox2.png", "res/FoxDeath.png"),
-    BUNNY(100, 100, 75, 60, 10,50, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90, Color.WHITE, "res/Bunny.png", "res/BunnyDeath.png");
+    FOX(150, 100,125, 100, 40, 1, 2,1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10, Color.ORANGE, "res/Fox2.png", "res/FoxDead.png"),
+    BUNNY(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90, Color.WHITE, "res/Bunny.png", "res/BunnyDead.png");
 
     private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 
@@ -38,6 +38,7 @@ public enum AnimalType implements Edible {
     private int MaxAge;
     private int EnergyReproduction;
     private int EnergyMovement;
+    private int maxBabies;
 
     private double spendRate;
 
@@ -55,7 +56,7 @@ public enum AnimalType implements Edible {
     private Color StatTitleColor;
     private String imgPath, deathImgPath;
 
-    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, char symb, double spawnRate, Color StatTitleColor, String imgPath, String deathImgPath) {
+    private AnimalType(int hp, int energy, int food, int water, int maxAge, int energyReproduction, int maxBabies,int energyMovement, double spendRate, int vision, boolean canPack, int ageReproduction, int CaloriesValue, HabitatType habitat, char symb, double spawnRate, Color StatTitleColor, String imgPath, String deathImgPath) {
         this.Maxhealth = hp;
         this.MaxEnergy = energy;
         this.MaxHunger = food;
@@ -74,6 +75,7 @@ public enum AnimalType implements Edible {
         this.StatTitleColor = StatTitleColor;
         this.imgPath = imgPath;
         this.deathImgPath = deathImgPath;
+        this.maxBabies = maxBabies;
         if(StatTitleColor == null){
             this.StatTitleColor = Rand.getAnyRandomColor();
         }
@@ -100,6 +102,9 @@ public enum AnimalType implements Edible {
         return EnergyMovement;
     }
     public double getSpawnRate(){return spawnRate;}
+    public int getMaxBabies(){
+        return maxBabies;
+    }
 
     /**
      * Metodo que verifica a existencia de predadores da especie

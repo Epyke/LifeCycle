@@ -234,7 +234,6 @@ public class Animal extends Entity implements Edible{
             return false;
         }
         if(currentEnergy >= type.getReproEnergy() && super.getAge() >= type.getAgeReproduction()){
-            if(Rand.checkPercentage(30)){
                 Cell currCell = CellUtils.findCell(super.getWorld(), super.getCoords());
                 ArrayList<Cell> neighbors = Adjacent.getOccupiedAdjacents(super.getWorld(), currCell);
                 if (neighbors.isEmpty()){
@@ -245,20 +244,31 @@ public class Animal extends Entity implements Edible{
                     if(e instanceof Animal){
                         Animal partner = (Animal) e;
                         if(partner.type == type && partner.getAge() >= type.getAgeReproduction() && partner.getEnergy() >= type.getReproEnergy() && partner.getGender() == Gender.MALE){
-                            Cell babySlot = Adjacent.getFirstAdjacent(super.getWorld(), currCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
-                            if(babySlot == null){
+                            ArrayList<Cell> freeSlots = utils.Adjacent.getAdjacents(super.getWorld(), currCell, world.CellType.GRASS, world.LayerType.NONE, structures.HabitatType.NONE);
+                            if(freeSlots.isEmpty()){
                                 return false;
                             }
-                                if(super.getWorld().bornEntity(babySlot.getCoord(), type)){
-                                    partner.costEnergy(type.getReproEnergy());
-                                    currentEnergy -= type.getReproEnergy();
-                                    return true;
+                            int numberMaxBabies = Rand.getRandomNmb(1, type.getMaxBabies());
+                            int babiesBorn = 0;
+
+                            for (int i = 0; i < numberMaxBabies; i++) {
+                                if (freeSlots.isEmpty()) break;
+
+                                Cell babySlot = freeSlots.remove(0);
+
+                                if (super.getWorld().bornEntity(babySlot.getCoord(), type)) {
+                                    babiesBorn++;
                                 }
-                            return false;
+                            }
+
+                            if(babiesBorn > 0){
+                                partner.costEnergy(type.getReproEnergy());
+                                currentEnergy -= type.getReproEnergy();
+                                return true;
+                            }
                         }
                     }
                 }
-            }
         }
         return false;
     }

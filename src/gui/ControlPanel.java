@@ -5,12 +5,7 @@ import entities.PlantType;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 public class ControlPanel extends JPanel {
@@ -24,6 +19,8 @@ public class ControlPanel extends JPanel {
     JButton btnRunYears;
     JComboBox<String> comboSpecies;
     JButton btnRunExtinction;
+    JSlider sliderSpeed;
+    JButton btnReset;
 
     public ControlPanel(GamePanel gp, int height) {
         this.gp = gp;
@@ -57,6 +54,28 @@ public class ControlPanel extends JPanel {
         });
         this.add(btnStartStop);
 
+        this.add(new JLabel(" "));
+
+        JPanel pnlSpeed = new JPanel(new GridLayout(2, 1));
+        pnlSpeed.setBackground(getBackground());
+        pnlSpeed.setBorder(BorderFactory.createTitledBorder(null, "Velocidade", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, Color.WHITE));
+
+        // Slider de 1 a 60 FPS, começa em 10
+        sliderSpeed = new JSlider(1, 20, 4);
+        sliderSpeed.setBackground(getBackground());
+        sliderSpeed.setForeground(Color.WHITE);
+        sliderSpeed.setPaintTicks(true);
+        sliderSpeed.setMajorTickSpacing(5);
+        sliderSpeed.setMinorTickSpacing(1);
+
+        // Listener: Quando moves o slider, muda o FPS no GamePanel
+        sliderSpeed.addChangeListener(e -> {
+            gp.setFPS(sliderSpeed.getValue());
+        });
+
+        pnlSpeed.add(sliderSpeed);
+        this.add(pnlSpeed);
+
         // Separador
         this.add(new JLabel(" "));
 
@@ -71,7 +90,7 @@ public class ControlPanel extends JPanel {
             try {
                 int y = Integer.parseInt(txtYears.getText());
                 gp.startYears(y);
-                btnStartStop.setText("INTERROMPER (Anos)");
+                btnStartStop.setText("SIMULAÇÃO CONTINUA (ANOS)");
                 btnStartStop.setBackground(Color.ORANGE);
             } catch (NumberFormatException ex) {
                 txtYears.setText("Erro");
@@ -100,12 +119,26 @@ public class ControlPanel extends JPanel {
         btnRunExtinction.addActionListener(e -> {
             String species = (String) comboSpecies.getSelectedItem();
             gp.startUntilExtinction(species);
-            btnStartStop.setText("INTERROMPER (Extinção)");
+            btnStartStop.setText("SIMULAÇÃO CONTINUA (Extinção)");
             btnStartStop.setBackground(Color.ORANGE);
         });
 
         pnlExtinction.add(comboSpecies);
         pnlExtinction.add(btnRunExtinction);
         this.add(pnlExtinction);
+
+        this.add(new JLabel(" "));
+
+        // --- 5. RESET BUTTON (NOVO) ---
+        btnReset = new JButton("REINICIAR SIMULAÇÂO");
+        btnReset.setBackground(Color.CYAN);
+        btnReset.setForeground(Color.BLACK);
+        btnReset.setFont(btnReset.getFont().deriveFont(java.awt.Font.BOLD));
+        btnReset.addActionListener(e -> {
+            gp.restartGame();
+            btnStartStop.setText("INICIAR");
+            btnStartStop.setBackground(Color.GREEN);
+        });
+        this.add(btnReset);
     }
 }

@@ -44,11 +44,31 @@ public class GamePanel extends JPanel implements Runnable {
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
 
-        // Inicializa o mundo
-        world = new World(maxScreenCol);
-        world.worldGen();
+        initWorld();
 
         tileM = new TileManager(this);
+    }
+
+    private void initWorld() {
+        world = new World(maxScreenCol);
+        world.worldGen();
+    }
+
+    public void restartGame() {
+        isRunning = false; // Para a simulação
+        initWorld();       // Cria um mundo novo
+
+        // Atualiza o painel de stats com o novo mundo
+        if (statsPanel != null) {
+            statsPanel.setWorld(world);
+        }
+        repaint(); // Desenha o novo mundo (estado inicial)
+    }
+
+    public void setFPS(int fps) {
+        if (fps > 0) {
+            this.FPS = fps;
+        }
     }
 
     public void startGameThread() {
@@ -85,30 +105,27 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double drawInterval = 1000000000 / FPS;
+        // Mover o calculo do drawInterval para DENTRO do loop
+        // para ele reagir às mudanças de velocidade
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
 
         while (gameThread != null) {
+            // Recalcula o intervalo baseado no FPS atual
+            double drawInterval = 1000000000.0 / FPS;
+
             currentTime = System.nanoTime();
             delta += (currentTime - lastTime) / drawInterval;
             lastTime = currentTime;
 
             if (delta >= 1) {
-                // SÓ ATUALIZA O MUNDO SE ESTIVER "RUNNING"
                 if (isRunning) {
                     update();
-                    checkStopConditions(); // Verifica se deve parar automaticamente
+                    checkStopConditions();
                 }
-
-                repaint(); // Desenha sempre (mesmo pausado, para vermos o mapa)
-
-                // Atualiza o painel lateral
-                if (statsPanel != null) {
-                    statsPanel.repaint();
-                }
-
+                repaint();
+                if (statsPanel != null) statsPanel.repaint();
                 delta--;
             }
         }

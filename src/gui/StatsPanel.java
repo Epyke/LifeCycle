@@ -129,4 +129,8 @@ public class StatsPanel extends JPanel {
             y += 5;
         }
     }
+
+    public void setWorld(World world) {
+        this.world = world;
+    }
 }
