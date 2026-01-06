@@ -71,7 +71,6 @@ public class Rand {
         return values[index];
     }
 
-
     /**
      * Returns a random element from a given List (ArrayList, LinkedList, etc).
      * @param list The list to pick from.

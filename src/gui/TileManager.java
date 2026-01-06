@@ -20,13 +20,11 @@ import world.stat.GlobalStat;
 public class TileManager {
 
     private GamePanel gp;
-    public Tile[] tiles;
     private HashMap<CellType, BufferedImage> tileImages;
     private HashMap<Object, BufferedImage> entityImages;
     private HashMap<Object, BufferedImage> deadEntityImages;
     public TileManager(GamePanel gp) {
         this.gp = gp;
-        tiles = new Tile[10];
         entityImages = new HashMap<>();
         deadEntityImages = new HashMap<>();
         tileImages = new HashMap<>();
