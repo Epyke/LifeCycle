@@ -116,7 +116,7 @@ public enum AnimalType implements Edible {
     }
 
     /**
-     * Metodo que verifica se o objeto que implementa a interface Edible, é comestivel pela especie de animal
+     * Metodo que verifica se o objeto que implementa a interface Edible, é comestivel pela especie de animals
      * @param food
      * @return
      */
