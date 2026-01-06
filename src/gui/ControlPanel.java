@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class ControlPanel extends JPanel {
 
@@ -22,7 +23,7 @@ public class ControlPanel extends JPanel {
     JSlider sliderSpeed;
     JButton btnReset;
 
-    public ControlPanel(GamePanel gp, int height) {
+    public ControlPanel(GamePanel gp, int height) throws UnsupportedLookAndFeelException {
         this.gp = gp;
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(new Color(40, 40, 40));
@@ -30,6 +31,8 @@ public class ControlPanel extends JPanel {
         // Layout: Uma coluna com vários botões
         this.setLayout(new GridLayout(10, 1, 10, 10)); // 10 linhas, espaçamento de 10px
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
 
         initUI();
     }

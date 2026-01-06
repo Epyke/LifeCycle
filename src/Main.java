@@ -6,10 +6,11 @@ import world.Time;
 import world.World;
 
 import gui.GamePanel;
-import javax.swing.JFrame;
+
+import javax.swing.*;
 import java.awt.*;
 
-public static void main(){
+public static void main() throws UnsupportedLookAndFeelException {
     JFrame window = new JFrame();
     window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     window.setResizable(false);

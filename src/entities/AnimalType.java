@@ -12,7 +12,8 @@ import java.util.Set;
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
     FOX(150, 100,125, 100, 40, 1, 2,1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10, Color.ORANGE, "res/Fox2.png", "res/FoxDead.png"),
-    BUNNY(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 90, Color.WHITE, "res/Bunny.png", "res/BunnyDead.png");
+    BUNNY(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 50, Color.WHITE, "res/Bunny.png", "res/BunnyDead.png"),
+    SHEEP(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 40, Color.PINK, null, null);
 
     private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 
@@ -21,7 +22,7 @@ public enum AnimalType implements Edible {
     static {
         huntMap.put(FOX, new HashSet<>(Set.of(BUNNY)));
         huntMap.put(BUNNY, new HashSet<>(Set.of(PlantType.CAROT)));
-
+        huntMap.put(SHEEP, new HashSet<>(Set.of(PlantType.PLANT)));
         //Geracao do HashMap inverso ao huntMap, key: presa, values: cacadores
         for(AnimalType hunter : huntMap.keySet()) {
             for(Edible food: huntMap.get(hunter)) {
