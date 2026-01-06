@@ -19,7 +19,7 @@ import world.stat.GlobalStat;
 
 public class TileManager {
 
-    GamePanel gp;
+    private GamePanel gp;
     public Tile[] tiles;
     private HashMap<Object, BufferedImage> entityImages;
     private HashMap<Object, BufferedImage> deadEntityImages;
@@ -33,12 +33,11 @@ public class TileManager {
 
     public void getTileImage() {
         try {
-            // --- CARREGAR TERRENO (Estático) ---
             File fGrass = new File("res/Grass.png");
             File fRock = new File("res/Rock.png");
             File fWater = new File("res/Water.png");
 
-            tiles[0] = new Tile(); // Vazio
+            tiles[0] = new Tile();
 
             tiles[1] = new Tile();
             if (fGrass.exists()) tiles[1].image = ImageIO.read(fGrass);
@@ -46,27 +45,21 @@ public class TileManager {
             tiles[2] = new Tile();
             if (fRock.exists()) tiles[2].image = ImageIO.read(fRock);
 
-            tiles[4] = new Tile(); // Usamos o 4 para água
+            tiles[4] = new Tile();
             if (fWater.exists()) tiles[4].image = ImageIO.read(fWater);
 
-            // --- CARREGAR IMAGENS DINÂMICAS (Dos Enums) ---
-
-            // 1. Animais
             for (AnimalType type : AnimalType.values()) {
-                // 1. Imagem Vivo
                 if (type.getImgPath() != null) {
                     File f = new File(type.getImgPath());
                     if (f.exists()) entityImages.put(type, ImageIO.read(f));
                 }
 
-                // 2. Imagem Morto
                 if (type.getDeadImgPath() != null) {
                     File f = new File(type.getDeadImgPath());
                     if (f.exists()) deadEntityImages.put(type, ImageIO.read(f));
                 }
             }
 
-            // 2. Plantas
             for (PlantType type : PlantType.values()) {
                 String path = type.getImgPath();
                 if (path != null) {
@@ -85,10 +78,10 @@ public class TileManager {
     }
 
     public void draw(Graphics2D g2) {
-        var grid = gp.world.getGrid();
-        var entitiesMap = gp.world.getEntities();
-        int tileSize = gp.tileSize;
-        ArrayList<Obstacle> obstacles = gp.world.getObstacles();
+        var grid = gp.getWorld().getGrid();
+        var entitiesMap = gp.getWorld().getEntities();
+        int tileSize = gp.getTileSize();
+        ArrayList<Obstacle> obstacles = gp.getWorld().getObstacles();
 
         if (grid == null) return;
 
@@ -128,25 +121,19 @@ public class TileManager {
                         Animal a = (Animal) e;
                         AnimalType type = a.getType();
 
-                        // Lógica de seleção de imagem
                         BufferedImage imgToDraw = null;
 
                         if (a.getIsDead()) {
-                            // Se está morto, tenta buscar a imagem de morto
                             imgToDraw = deadEntityImages.get(type);
-                            // Fallback: Se não houver imagem de morto, usa a de vivo mas podes aplicar um filtro ou cor
                         } else {
-                            // Se está vivo
                             imgToDraw = entityImages.get(type);
                         }
 
-                        // DESENHAR
                         if (imgToDraw != null) {
                             g2.drawImage(imgToDraw, worldX + offset, worldY + offset, entitySize, entitySize, null);
                         } else {
-                            // FALLBACK (Sem Imagem)
-                            if (a.getIsDead()) g2.setColor(Color.BLACK); // Morto fica preto
-                            else g2.setColor(type.getStatTitleColor()); // Vivo fica com a cor do tipo
+                            if (a.getIsDead()) g2.setColor(Color.BLACK);
+                            else g2.setColor(type.getStatTitleColor());
                             g2.fillOval(worldX + offset, worldY + offset, entitySize, entitySize);
                         }
                     }
@@ -157,7 +144,6 @@ public class TileManager {
                         if (entityImages.containsKey(type)) {
                             g2.drawImage(entityImages.get(type), worldX + offset, worldY + offset, entitySize, entitySize, null);
                         } else {
-                            // FALLBACK: QUADRADO com cor aleatória definida
                             g2.setColor(type.getStatTitleColor());
                             g2.fillRect(worldX + offset, worldY + offset, entitySize, entitySize);
                         }

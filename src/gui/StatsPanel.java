@@ -5,7 +5,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.util.Map;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 import entities.AnimalType;
 import entities.PlantType;
@@ -17,15 +18,17 @@ import world.stat.YearStat;
 
 public class StatsPanel extends JPanel {
 
-    World world;
-    public final int width = 250; // Aumentei um pouco a largura para caberem os detalhes
-    public final int height;
+    private World world;
+    private final int width = 250;
+    private final int height;
 
-    public StatsPanel(World world, int height) {
+    public StatsPanel(World world, int height) throws UnsupportedLookAndFeelException {
         this.world = world;
         this.height = height;
         this.setPreferredSize(new Dimension(width, height));
-        this.setBackground(new Color(30, 30, 30)); // Cinzento quase preto
+        this.setBackground(new Color(30, 30, 30));
+
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
 
     @Override
@@ -38,17 +41,15 @@ public class StatsPanel extends JPanel {
         int y = 20;
         int lineHeight = 18;
 
-        // TÍTULO
         g.setFont(new Font("Consolas", Font.BOLD, 23));
         g.setColor(Color.ORANGE);
         g.drawString("ANO: " + world.getStats().getCurrYear(), x, y);
         y += 30;
 
         GlobalStat global = world.getStats().getGlobalStats();
-        YearStat year = world.getStats().getCurrYearStat(); // Agora lê do Snapshot correto
+        YearStat year = world.getStats().getCurrYearStat();
         Map<String, SpecieStat> speciesMap = world.getStats().getSpecieStat();
 
-        // NESTE ANO
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.CYAN);
         g.drawString("[ NESTE ANO ]", x, y);
@@ -60,7 +61,6 @@ public class StatsPanel extends JPanel {
         g.drawString("Mortes      : +" + year.getDied_this_turn(), x, y); y += lineHeight;
         g.drawString("Comidos     : +" + year.getEaten_this_turn(), x, y); y += lineHeight + 5;
 
-        // GLOBAL
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.MAGENTA);
         g.drawString("[ GLOBAL TOTAL ]", x, y);
@@ -73,7 +73,6 @@ public class StatsPanel extends JPanel {
         g.drawString("Mortos Tot  : " + global.getTotal_deaths(), x, y); y += lineHeight;
         g.drawString("Reprod. Tot : " + global.getTotal_born_reproduction(), x, y); y += lineHeight + 10;
 
-        // POR ESPÉCIE
         g.setFont(new Font("Consolas", Font.BOLD, 17));
         g.setColor(Color.GREEN);
         g.drawString("[ POR ESPÉCIE ]", x, y);
@@ -85,16 +84,15 @@ public class StatsPanel extends JPanel {
 
             g.setFont(new Font("Consolas", Font.BOLD, 16));
 
-            Color c = null; // Inicializa a null
+            Color c = null;
             try {
-                // Tenta achar em AnimalType
+
                 c = AnimalType.valueOf(name).getStatTitleColor();
             } catch (IllegalArgumentException e1) {
                 try {
-                    // Tenta achar em PlantType
+
                     c = PlantType.valueOf(name).getStatTitleColor();
                 } catch (IllegalArgumentException e2) {
-                    // Se não existir o Enum, c continua null
                 }
             }
             g.setColor(c);
@@ -102,7 +100,6 @@ public class StatsPanel extends JPanel {
             g.drawString("--- " + name + " ---", x, y);
             y += lineHeight;
 
-            // Dados da Espécie
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.LIGHT_GRAY);
 

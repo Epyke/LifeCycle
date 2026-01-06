@@ -4,42 +4,34 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+
 import world.World;
 import world.stat.SpecieStat;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // --- CONFIGURAÇÕES DE ECRÃ ---
-    final int originalTileSize = 16;
-    final int scale = 2; // Aumentei o scale para veres melhor os ícones de 32x32
-    public final int tileSize = originalTileSize * scale;
-    public final int maxScreenCol = 30; // 30 colunas
-    public final int maxScreenRow = 30; // 30 linhas
-    public final int screenWidth = tileSize * maxScreenCol;
-    public final int screenHeight = tileSize * maxScreenRow;
+    private final int originalTileSize = 16;
+    private final int scale = 2;
+    private final int tileSize = originalTileSize * scale;
+    private final int maxScreenCol = 30;
+    private final int maxScreenRow = 30;
+    private final int screenWidth = tileSize * maxScreenCol;
+    private final int screenHeight = tileSize * maxScreenRow;
 
-    // --- SISTEMA ---
-    int FPS = 10; // Reduzi para 10 para dar tempo de ver as coisas a acontecer
-    Thread gameThread;
-    public World world;
+    private int FPS = 10;
+    private Thread gameThread;
+    private World world;
     TileManager tileM;
-    public StatsPanel statsPanel; // Referência para atualizar stats
+    private StatsPanel statsPanel;
 
-    // --- VARIÁVEIS DE CONTROLO DE TEMPO (Novo!) ---
-    private boolean isRunning = false; // Começa pausado
+    private boolean isRunning = false;
     private SimulationMode mode = SimulationMode.CONTINUOUS;
     private int targetYear = 0;
     private String targetSpecies = "";
 
-    // Enum para os modos de simulação
-    public enum SimulationMode {
-        CONTINUOUS,
-        YEAR_LIMIT,
-        EXTINCTION
-    }
-
-    public GamePanel() {
+    public GamePanel(StatsPanel statsPanel) throws UnsupportedLookAndFeelException {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -47,6 +39,8 @@ public class GamePanel extends JPanel implements Runnable {
         initWorld();
 
         tileM = new TileManager(this);
+
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
 
     private void initWorld() {
@@ -55,14 +49,12 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void restartGame() {
-        isRunning = false; // Para a simulação
-        initWorld();       // Cria um mundo novo
+        isRunning = false;
 
-        // Atualiza o painel de stats com o novo mundo
         if (statsPanel != null) {
             statsPanel.setWorld(world);
         }
-        repaint(); // Desenha o novo mundo (estado inicial)
+        repaint();
     }
 
     public void setFPS(int fps) {
@@ -75,8 +67,6 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this);
         gameThread.start();
     }
-
-    // --- MÉTODOS DE CONTROLO (Chamados pelo ControlPanel) ---
 
     public void startContinuous() {
         this.mode = SimulationMode.CONTINUOUS;
@@ -105,14 +95,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        // Mover o calculo do drawInterval para DENTRO do loop
-        // para ele reagir às mudanças de velocidade
         double delta = 0;
         long lastTime = System.nanoTime();
         long currentTime;
 
         while (gameThread != null) {
-            // Recalcula o intervalo baseado no FPS atual
             double drawInterval = 1000000000.0 / FPS;
 
             currentTime = System.nanoTime();
@@ -140,7 +127,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
         else if (mode == SimulationMode.EXTINCTION) {
             SpecieStat s = world.getStats().getSpecieStat().get(targetSpecies);
-            // Se a espécie não existe ou tem 0 vivos, paramos
             if (s == null || s.getCurrent_alive() <= 0) {
                 isRunning = false;
                 System.out.println("Simulação parada: " + targetSpecies + " extinta.");
@@ -158,5 +144,21 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
         tileM.draw(g2);
         g2.dispose();
+    }
+
+    public int getScreenWidth(){
+        return screenWidth;
+    }
+
+    public int getScreenHeight(){
+        return screenHeight;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public int getTileSize(){
+        return tileSize;
     }
 }

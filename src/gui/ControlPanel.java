@@ -11,10 +11,9 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
 public class ControlPanel extends JPanel {
 
-    GamePanel gp;
-    public final int width = 200; // Largura do painel de controlo
+    private GamePanel gp;
+    private final int width = 200;
 
-    // Componentes
     JButton btnStartStop;
     JTextField txtYears;
     JButton btnRunYears;
@@ -28,21 +27,18 @@ public class ControlPanel extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(new Color(40, 40, 40));
 
-        // Layout: Uma coluna com vários botões
-        this.setLayout(new GridLayout(10, 1, 10, 10)); // 10 linhas, espaçamento de 10px
+        this.setLayout(new GridLayout(10, 1, 10, 10));
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        UIManager.setLookAndFeel(new NimbusLookAndFeel());
-
         initUI();
+
+        UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
 
     private void initUI() {
-        // Estilo dos Títulos
         TitledBorder border;
 
-        // --- 1. CONTINUOUS ---
-        btnStartStop = new JButton("SIMULAÇÃO CONTINUA");
+        btnStartStop = new JButton("INICIAR");
         btnStartStop.setBackground(Color.GREEN);
         btnStartStop.addActionListener(e -> {
             if (gp.isRunning()) {
@@ -63,7 +59,6 @@ public class ControlPanel extends JPanel {
         pnlSpeed.setBackground(getBackground());
         pnlSpeed.setBorder(BorderFactory.createTitledBorder(null, "Velocidade", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, Color.WHITE));
 
-        // Slider de 1 a 60 FPS, começa em 10
         sliderSpeed = new JSlider(1, 20, 4);
         sliderSpeed.setBackground(getBackground());
         sliderSpeed.setForeground(Color.WHITE);
@@ -71,7 +66,6 @@ public class ControlPanel extends JPanel {
         sliderSpeed.setMajorTickSpacing(5);
         sliderSpeed.setMinorTickSpacing(1);
 
-        // Listener: Quando moves o slider, muda o FPS no GamePanel
         sliderSpeed.addChangeListener(e -> {
             gp.setFPS(sliderSpeed.getValue());
         });
@@ -79,10 +73,8 @@ public class ControlPanel extends JPanel {
         pnlSpeed.add(sliderSpeed);
         this.add(pnlSpeed);
 
-        // Separador
         this.add(new JLabel(" "));
 
-        // --- 2. TIME LIMIT (Anos) ---
         JPanel pnlYears = new JPanel(new GridLayout(2, 1));
         pnlYears.setBackground(getBackground());
         pnlYears.setBorder(BorderFactory.createTitledBorder(null, "Correr N Anos", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, Color.WHITE));
@@ -93,7 +85,7 @@ public class ControlPanel extends JPanel {
             try {
                 int y = Integer.parseInt(txtYears.getText());
                 gp.startYears(y);
-                btnStartStop.setText("SIMULAÇÃO CONTINUA (ANOS)");
+                btnStartStop.setText("CONTINUAR (ANOS)");
                 btnStartStop.setBackground(Color.ORANGE);
             } catch (NumberFormatException ex) {
                 txtYears.setText("Erro");
@@ -104,25 +96,22 @@ public class ControlPanel extends JPanel {
         pnlYears.add(btnRunYears);
         this.add(pnlYears);
 
-        // Separador
         this.add(new JLabel(" "));
 
-        // --- 3. EXTINCTION ---
         JPanel pnlExtinction = new JPanel(new GridLayout(2, 1));
         pnlExtinction.setBackground(getBackground());
         pnlExtinction.setBorder(BorderFactory.createTitledBorder(null, "Até Extinção", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, Color.WHITE));
 
         comboSpecies = new JComboBox<>();
-        // Adicionar Animais ao dropdown
+
         for (AnimalType t : AnimalType.values()) comboSpecies.addItem(t.toString());
-        // Adicionar Plantas ao dropdown
         for (PlantType t : PlantType.values()) comboSpecies.addItem(t.toString());
 
         btnRunExtinction = new JButton("Correr até Extinção");
         btnRunExtinction.addActionListener(e -> {
             String species = (String) comboSpecies.getSelectedItem();
             gp.startUntilExtinction(species);
-            btnStartStop.setText("SIMULAÇÃO CONTINUA (Extinção)");
+            btnStartStop.setText("CONTINUAR (Extinção)");
             btnStartStop.setBackground(Color.ORANGE);
         });
 
@@ -132,8 +121,7 @@ public class ControlPanel extends JPanel {
 
         this.add(new JLabel(" "));
 
-        // --- 5. RESET BUTTON (NOVO) ---
-        btnReset = new JButton("REINICIAR SIMULAÇÂO");
+        btnReset = new JButton("REINICIAR");
         btnReset.setBackground(Color.CYAN);
         btnReset.setForeground(Color.BLACK);
         btnReset.setFont(btnReset.getFont().deriveFont(java.awt.Font.BOLD));
