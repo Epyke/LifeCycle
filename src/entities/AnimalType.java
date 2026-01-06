@@ -11,9 +11,9 @@ import java.util.Set;
 
 public enum AnimalType implements Edible {
     //Syntax: NAME(MaxHealth, MaxEnergy, MaxFood, MaxWater, MaxAge, EnergyReproduction, EnergyMovement, spendRate, vision, canPack, ageReproduction, caloriesValue, habitat, planDiet)
-    FOX(150, 100,125, 100, 40, 1, 2,1,0.07, 5, true, 15, 30, HabitatType.DEN, 'W', 10, Color.ORANGE, "res/Fox2.png", "res/FoxDead.png"),
-    BUNNY(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 50, Color.WHITE, "res/Bunny.png", "res/BunnyDead.png"),
-    SHEEP(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 40, Color.PINK, null, null);
+    FOX(150, 100,125, 100, 40, 1, 2,1,0.07, 5, true, 15, 30, HabitatType.DEN, 'F', 10, Color.ORANGE, "res/Fox.png", "res/FoxDead.png"),
+    BUNNY(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'B', 50, Color.WHITE, "res/Bunny.png", "res/BunnyDead.png"),
+    SHEEP(100, 100, 75, 60, 20,50, 4, 1, 0.05, 3, false, 5, 60, HabitatType.BURROW, 'S', 40, Color.PINK, "res/Sheep.png", "res/SheepDead.png");
 
     private static final HashMap<AnimalType, HashSet<Edible>> huntMap = new HashMap<>();
 

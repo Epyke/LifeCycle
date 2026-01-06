@@ -9,11 +9,15 @@ import java.awt.*;
 
 public static void main() throws UnsupportedLookAndFeelException {
     GamePanel gp = new GamePanel();
-    GameWindow newGame = new GameWindow(gp,new StatsPanel(gp.getWorld(), gp.getScreenHeight()), new ControlPanel(gp, gp.getScreenHeight()));
+    StatsPanel sp = new StatsPanel(gp.getWorld(), gp.getScreenHeight());
+    gp.setStatsPanel(sp);
+    ControlPanel cp = new ControlPanel(gp, gp.getScreenHeight());
+
+    GameWindow newGame = new GameWindow(gp,sp,cp);
     newGame.initGameThread();
 
-     /**World world1 = new World(30);
+     World world1 = new World(30);
      world1.worldGen();
      Time worldTime = new Time(world1);
-     worldTime.specieExinction(AnimalType.FOX);*/
+     worldTime.specieExinction(AnimalType.FOX);
 }

@@ -21,6 +21,7 @@ public class TileManager {
 
     private GamePanel gp;
     public Tile[] tiles;
+    private HashMap<CellType, BufferedImage> tileImages;
     private HashMap<Object, BufferedImage> entityImages;
     private HashMap<Object, BufferedImage> deadEntityImages;
     public TileManager(GamePanel gp) {
@@ -28,25 +29,20 @@ public class TileManager {
         tiles = new Tile[10];
         entityImages = new HashMap<>();
         deadEntityImages = new HashMap<>();
+        tileImages = new HashMap<>();
         getTileImage();
     }
 
     public void getTileImage() {
         try {
-            File fGrass = new File("res/Grass.png");
-            File fRock = new File("res/Rock.png");
-            File fWater = new File("res/Water.png");
-
-            tiles[0] = new Tile();
-
-            tiles[1] = new Tile();
-            if (fGrass.exists()) tiles[1].image = ImageIO.read(fGrass);
-
-            tiles[2] = new Tile();
-            if (fRock.exists()) tiles[2].image = ImageIO.read(fRock);
-
-            tiles[4] = new Tile();
-            if (fWater.exists()) tiles[4].image = ImageIO.read(fWater);
+            for (CellType type : CellType.values()) {
+                File f = new File(type.getImgPath());
+                if (f.exists()) {
+                    tileImages.put(type, ImageIO.read(f));
+                } else {
+                    System.out.println("Textura não encontrada: " + type.getImgPath());
+                }
+            }
 
             for (AnimalType type : AnimalType.values()) {
                 if (type.getImgPath() != null) {
@@ -94,24 +90,32 @@ public class TileManager {
                 int worldX = x * tileSize;
                 int worldY = y * tileSize;
 
+                BufferedImage tileImg = tileImages.get(cell.getType());
 
-                if (cell.getType() == CellType.WATER) {
-                    if (tiles[4].image != null) g2.drawImage(tiles[4].image, worldX, worldY, tileSize, tileSize, null);
-                    else { g2.setColor(Color.BLUE); g2.fillRect(worldX, worldY, tileSize, tileSize); }
-                }
-                else if (cell.getType() == CellType.GRASS) {
-                    if (tiles[1].image != null) g2.drawImage(tiles[1].image, worldX, worldY, tileSize, tileSize, null);
-                    else { g2.setColor(new Color(34, 139, 34)); g2.fillRect(worldX, worldY, tileSize, tileSize); }
-                }
-                else if (cell.getType() == CellType.ROCK) {
-                    for(Obstacle o: obstacles) {
-                        if(o instanceof Rock) {
-                            Rock Tryrock = (Rock) o;
-                            if(Tryrock.getStartCoord() .getX() == cell.getCoord().getX() &&  Tryrock.getStartCoord().getY() == cell.getCoord().getY()) {
-                                g2.drawImage(tiles[2].image, worldX, worldY, tileSize * 2, tileSize * 2, null);
+                if (tileImg != null) {
+                    // Caso especial para a Rocha que você desenha maior
+                    if (cell.getType() == CellType.ROCK) {
+                        // A sua lógica original de desenhar a rocha apenas na coordenada inicial
+                        for(Obstacle o: obstacles) {
+                            if(o instanceof Rock) {
+                                Rock Tryrock = (Rock) o;
+                                if(Tryrock.getStartCoord().getX() == x && Tryrock.getStartCoord().getY() == y) {
+                                    // Desenha 2x maior
+                                    g2.drawImage(tileImg, worldX, worldY, tileSize * 2, tileSize * 2, null);
+                                }
                             }
                         }
+                    } else {
+                        // Desenho padrão (Grama, Água)
+                        g2.drawImage(tileImg, worldX, worldY, tileSize, tileSize, null);
                     }
+                } else {
+                    // Fallback se não tiver imagem (usando cores)
+                    if (cell.getType() == CellType.WATER) g2.setColor(Color.BLUE);
+                    else if (cell.getType() == CellType.GRASS) g2.setColor(new Color(34, 139, 34));
+                    else g2.setColor(Color.GRAY);
+
+                    g2.fillRect(worldX, worldY, tileSize, tileSize);
                 }
 
                 if (cell.getCurrentOcupant() != LayerType.NONE) {

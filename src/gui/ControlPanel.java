@@ -2,9 +2,8 @@ package gui;
 
 import entities.AnimalType;
 import entities.PlantType;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
+
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
@@ -27,8 +26,9 @@ public class ControlPanel extends JPanel {
         this.setPreferredSize(new Dimension(width, height));
         this.setBackground(new Color(40, 40, 40));
 
-        this.setLayout(new GridLayout(10, 1, 10, 10));
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        this.setLayout(new GridBagLayout());
 
         initUI();
 
@@ -36,6 +36,10 @@ public class ControlPanel extends JPanel {
     }
 
     private void initUI() {
+        JPanel innerPanel = new JPanel(new GridLayout(10, 1, 10, 10));
+        innerPanel.setBackground(this.getBackground());
+        innerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         TitledBorder border;
 
         btnStartStop = new JButton("INICIAR");
@@ -51,9 +55,9 @@ public class ControlPanel extends JPanel {
                 btnStartStop.setBackground(Color.RED);
             }
         });
-        this.add(btnStartStop);
+        innerPanel.add(btnStartStop);
 
-        this.add(new JLabel(" "));
+        innerPanel.add(new JLabel(" "));
 
         JPanel pnlSpeed = new JPanel(new GridLayout(2, 1));
         pnlSpeed.setBackground(getBackground());
@@ -71,9 +75,9 @@ public class ControlPanel extends JPanel {
         });
 
         pnlSpeed.add(sliderSpeed);
-        this.add(pnlSpeed);
+        innerPanel.add(pnlSpeed);
 
-        this.add(new JLabel(" "));
+        innerPanel.add(new JLabel(" "));
 
         JPanel pnlYears = new JPanel(new GridLayout(2, 1));
         pnlYears.setBackground(getBackground());
@@ -94,9 +98,9 @@ public class ControlPanel extends JPanel {
 
         pnlYears.add(txtYears);
         pnlYears.add(btnRunYears);
-        this.add(pnlYears);
+        innerPanel.add(pnlYears);
 
-        this.add(new JLabel(" "));
+        innerPanel.add(new JLabel(" "));
 
         JPanel pnlExtinction = new JPanel(new GridLayout(2, 1));
         pnlExtinction.setBackground(getBackground());
@@ -117,9 +121,9 @@ public class ControlPanel extends JPanel {
 
         pnlExtinction.add(comboSpecies);
         pnlExtinction.add(btnRunExtinction);
-        this.add(pnlExtinction);
+        innerPanel.add(pnlExtinction);
 
-        this.add(new JLabel(" "));
+        innerPanel.add(new JLabel(" "));
 
         btnReset = new JButton("REINICIAR");
         btnReset.setBackground(Color.CYAN);
@@ -130,6 +134,8 @@ public class ControlPanel extends JPanel {
             btnStartStop.setText("INICIAR");
             btnStartStop.setBackground(Color.GREEN);
         });
-        this.add(btnReset);
+        innerPanel.add(btnReset);
+        this.add(innerPanel);
     }
+
 }

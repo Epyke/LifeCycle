@@ -282,10 +282,12 @@ public class World {
         while (it.hasNext()) {
             Entity e = it.next().getValue();
 
-            boolean isRottenAnimal = (e instanceof Animal && e.getDecomposeTimer() >= 1);
-            boolean isRottenPlant = (e instanceof Plant && e.getDecomposeTimer() >= 1);
+            boolean isDeadAnimal = (e instanceof Animal && e.getIsDead());
+            boolean isDeadPlant = (e instanceof Plant && e.getIsDead());
 
-            if (isRottenAnimal || isRottenPlant) {
+            if ((isDeadAnimal && e.getDecomposeTimer() >= 1) ||
+                    (isDeadPlant && e.getDecomposeTimer() >= 0)) {
+
                 CellUtils.findCell(this, e.getCoords()).setCurrentOcupant(LayerType.NONE);
                 it.remove();
             }

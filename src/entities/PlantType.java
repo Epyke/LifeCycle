@@ -5,8 +5,8 @@ import utils.Rand;
 import java.awt.*;
 
 public enum PlantType implements Edible {
-    PLANT('P', 2, 15, 25, 50, 5, 20, 10.0, Color.GREEN, "res/Plants.png"),
-    CAROT('C', 2, 15, 25, 50, 5, 20, 90.0, null, "res/Carrot.png");
+    PLANT('P', 2, 15, 25, 50, 5, 20, 50.0, Color.GREEN, "res/Plants.png"),
+    CAROT('C', 2, 15, 25, 50, 5, 20, 50.0, null, "res/Carrot.png");
     private char symb;
     private int ageReproduction;
     private int maxAge;

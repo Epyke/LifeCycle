@@ -13,10 +13,10 @@ import world.stat.SpecieStat;
 public class GamePanel extends JPanel implements Runnable {
 
     private final int originalTileSize = 16;
-    private final int scale = 2;
+    private final int scale = 3;
     private final int tileSize = originalTileSize * scale;
-    private final int maxScreenCol = 30;
-    private final int maxScreenRow = 30;
+    private final int maxScreenCol = 25;
+    private final int maxScreenRow = 25;
     private final int screenWidth = tileSize * maxScreenCol;
     private final int screenHeight = tileSize * maxScreenRow;
 
@@ -31,7 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     private int targetYear = 0;
     private String targetSpecies = "";
 
-    public GamePanel(StatsPanel statsPanel) throws UnsupportedLookAndFeelException {
+    public GamePanel() throws UnsupportedLookAndFeelException {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -43,6 +43,10 @@ public class GamePanel extends JPanel implements Runnable {
         UIManager.setLookAndFeel(new NimbusLookAndFeel());
     }
 
+    public void setStatsPanel(StatsPanel statsPanel) {
+        this.statsPanel = statsPanel;
+    }
+
     private void initWorld() {
         world = new World(maxScreenCol);
         world.worldGen();
@@ -50,6 +54,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void restartGame() {
         isRunning = false;
+
+        initWorld();
 
         if (statsPanel != null) {
             statsPanel.setWorld(world);

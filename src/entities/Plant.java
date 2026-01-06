@@ -59,7 +59,7 @@ public class Plant extends Entity implements Edible{
         }
         //Adicionar uma mecánica de sorte na reprodução
         //Para evitar o crescimento exponencial de plantas
-        if(Rand.checkPercentage(15)){
+        if(Rand.checkPercentage(10)){
             Cell currentCell = CellUtils.findCell(super.getWorld(), super.getCoords());
             Cell plantSlot = Adjacent.getFirstAdjacent(super.getWorld(), currentCell, CellType.GRASS, LayerType.NONE, HabitatType.NONE);
 
