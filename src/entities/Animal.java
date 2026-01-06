@@ -133,8 +133,19 @@ public class Animal extends Entity implements Edible{
 
         Cell targetCell = CellUtils.findCell(w, x, y);
 
-        if (targetCell.getCurrentOcupant() == LayerType.NONE
-                && targetCell.getType() == CellType.GRASS) {
+        boolean isEmpty = targetCell.getCurrentOcupant() == LayerType.NONE;
+        boolean isPlant = targetCell.getCurrentOcupant() == LayerType.PLANT;
+
+        if ((isEmpty || isPlant) && targetCell.getType() == CellType.GRASS) {
+
+            if (isPlant) {
+                Entity plant = w.getEntities().get(new Coord(x, y));
+                if (plant != null) {
+                    plant.die("trampled");
+                    w.removeEntity(new Coord(x, y));
+                }
+            }
+
             w.moveEntity(super.getCoords(), new Coord(x, y));
             currentEnergy -= type.getEnergyMovement();
             return true;

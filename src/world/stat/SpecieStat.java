@@ -11,6 +11,7 @@ public class SpecieStat {
     private int thirst;
     private int natural;
     private int energy;
+    private int trampled;
 
     public SpecieStat(){
         current_alive = 0;
@@ -21,10 +22,15 @@ public class SpecieStat {
         thirst = 0;
         natural = 0;
         energy = 0;
+        trampled = 0;
     }
 
     public void increment_current_alive(){
         current_alive++;
+    }
+
+    public void increment_trampled(){
+        trampled++;
     }
 
     public void decrease_current_alive(){
@@ -89,5 +95,9 @@ public class SpecieStat {
 
     public int getEnergy() {
         return energy;
+    }
+
+    public int getTrampled() {
+        return trampled;
     }
 }

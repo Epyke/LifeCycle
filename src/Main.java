@@ -16,8 +16,8 @@ public static void main() throws UnsupportedLookAndFeelException {
     GameWindow newGame = new GameWindow(gp,sp,cp);
     newGame.initGameThread();
 
-     World world1 = new World(30);
+     /**World world1 = new World(30);
      world1.worldGen();
      Time worldTime = new Time(world1);
-     worldTime.specieExinction(AnimalType.FOX);
+     worldTime.specieExinction(AnimalType.FOX);*/
 }

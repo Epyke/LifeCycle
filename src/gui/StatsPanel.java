@@ -118,6 +118,10 @@ public class StatsPanel extends JPanel {
                 y += lineHeight;
                 g.drawString("  Ene:" + s.getEnergy() + " Nat:" + s.getNatural(), x, y);
                 y += lineHeight;
+                if (s.getTrampled() > 0) {
+                    g.drawString("  Esmag:" + s.getTrampled(), x, y);
+                    y += lineHeight;
+                }
             } else {
                 g.drawString("Sem mortes registadas.", x, y);
                 y += lineHeight;

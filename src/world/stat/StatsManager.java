@@ -61,7 +61,6 @@ public class StatsManager {
         globalStats.decrease_current_entities_alive();
         recordingStat.increment_died_this_turn();
 
-        // 2. Specific Cause counters
         switch (cause) {
             case "starved":
                 s.increment_starved();
@@ -75,6 +74,8 @@ public class StatsManager {
             case "natural":
                 s.increment_natural();
                 break;
+            case "trampled":
+                s.increment_trampled();
             case "eaten":
                 s.increment_total_eaten();
                 globalStats.increment_total_eaten();
@@ -120,7 +121,6 @@ public class StatsManager {
         sb.append("       FINAL STATISTICS ").append("\n");
         sb.append(border);
 
-        // 2. Global Totals
         sb.append(" [GLOBAL]\n");
         sb.append(String.format("  %-20s : %d\n", "Current Alive", globalStats.getCurrent_entities_alive()));
         sb.append(String.format("  %-20s : %d\n", "Total Created", globalStats.getTotal_entities_ever_created()));
@@ -128,10 +128,8 @@ public class StatsManager {
         sb.append(String.format("  %-20s : %d\n", "Total Born (Repro)", globalStats.getTotal_born_reproduction()));
         sb.append(subBorder);
 
-        // 3. Species Breakdown
         sb.append(" [SPECIES]\n");
 
-        // Table Header
         sb.append(String.format("  %-10s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s | %-7s \n", "TYPE", "ALIVE", "TOTAL", "DEAD", "STARVED", "THIRST", "ENERGY", "NATURAL", "EATEN"));
         sb.append("  ").append("-".repeat(34)).append("\n");
 
