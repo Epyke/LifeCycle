@@ -1,22 +1,11 @@
 import entities.*;
 import gui.*;
-import obstacles.Lake;
-import obstacles.Obstacle;
-import obstacles.Rock;
-import structures.Habitat;
-import structures.HabitatType;
-import utils.Adjacent;
-import utils.CellUtils;
-import utils.Rand;
+
 import world.*;
-import world.stat.GlobalStat;
-import world.stat.SpecieStat;
-import world.stat.StatsManager;
-import world.stat.YearStat;
+
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public static void main() throws UnsupportedLookAndFeelException {
     GamePanel gp = new GamePanel();
